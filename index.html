@@ -247,7 +247,7 @@ textarea{min-height:65px;resize:vertical}
       <button class="btn btn-mavi" onclick="girisYap()">Giriş Yap</button>
     </div>
     <div id="s-kayit" class="ic-sekme">
-      <div class="form-grup"><label>Ad Soyad</label><input type="text" id="kayitAd" placeholder=" "></div>
+      <div class="form-grup"><label>Ad Soyad</label><input type="text" id="kayitAd" placeholder=""></div>
       <div class="form-grup"><label>E-posta</label><input type="email" id="kayitEmail" placeholder="ornek@okul.edu.tr"></div>
       <div class="form-grup"><label>Şifre</label><input type="password" id="kayitSifre" placeholder="En az 6 karakter"></div>
       <div class="form-grup"><label>Rolünüz</label>
@@ -381,7 +381,7 @@ textarea{min-height:65px;resize:vertical}
           <option value="Mülki amir / emniyet bilgilendirildi">Mülki amir / emniyet bilgilendirildi</option>
         </select>
       </div>
-      <div class="form-grup"><label>Sorumlu kişi</label><input type="text" id="mudahaleSorumlu" placeholder=" "></div>
+      <div class="form-grup"><label>Sorumlu kişi</label><input type="text" id="mudahaleSorumlu" placeholder="Branş ve İsim"></div>
       <div class="form-grup"><label>Takip tarihi</label><input type="text" id="mudahaleTakip" placeholder="ör. 01.01.2026"></div>
       <div class="form-grup"><label>Not</label><textarea id="mudahaleNot" placeholder="Öğrenci sakin görünüyordu, veli ilgilenmeye istekli..."></textarea></div>
       <button class="btn btn-mavi" onclick="mudahaleKaydet()">✓ Müdahaleyi Kaydet</button>
@@ -426,10 +426,9 @@ textarea{min-height:65px;resize:vertical}
   <div class="modal">
     <div class="modal-baslik"><span>Yeni Öğrenci Ekle</span><button class="kapat-btn" onclick="modalKapat('ekleOverlay')">✕</button></div>
     <div class="modal-icerik">
-      <div class="form-grup"><label>Okul No</label><input type="text" id="yeniNo" placeholder=" "></div>
-      <div class="form-grup"><label>Ad Soyad</label><input type="text" id="yeniAd" placeholder=" "></div>
-      <div class="form-grup"><label>Sınıf</label><input type="text" id="yeniSinif" placeholder="9-A"></div>
-      <div class="form-grup"><label>Veli Adı</label><input type="text" id="yeniVeli" placeholder=" "></div>
+      <div class="form-grup"><label>Ad Soyad</label><input type="text" id="yeniAd" placeholder=""></div>
+      <div class="form-grup"><label>Sınıf / No</label><input type="text" id="yeniSinif" placeholder="9-A / 15"></div>
+      <div class="form-grup"><label>Veli Adı</label><input type="text" id="yeniVeli" placeholder="Mehmet Yıldız"></div>
       <div class="form-grup"><label>Veli Telefonu</label><input type="text" id="yeniTelefon" placeholder="0532 xxx xx xx"></div>
       <button class="btn btn-mavi" onclick="ogrenciEkle()">Ekle</button>
       <button class="btn btn-beyaz" onclick="modalKapat('ekleOverlay')">İptal</button>
@@ -442,7 +441,6 @@ textarea{min-height:65px;resize:vertical}
   <div class="modal">
     <div class="modal-baslik"><span>✏️ Öğrenci Düzenle</span><button class="kapat-btn" onclick="modalKapat('duzenleOverlay')">✕</button></div>
     <div class="modal-icerik">
-      <div class="form-grup"><label>Okul No</label><input type="text" id="duzNo"></div>
       <div class="form-grup"><label>Ad Soyad</label><input type="text" id="duzAd"></div>
       <div class="form-grup"><label>Sınıf / No</label><input type="text" id="duzSinif"></div>
       <div class="form-grup"><label>Veli Adı</label><input type="text" id="duzVeli"></div>
@@ -936,21 +934,20 @@ function mudahaleEkleDetay(){ modalKapat('detayOverlay'); ekranGoster('mudahale'
 // ═══════════════════════════════════════════════
 function ogrenciEkleAc(){ document.getElementById('ekleOverlay').classList.add('aktif'); }
 function ogrenciEkle(){
-  const no=document.getElementById('yeniNo').value.trim();
   const ad=document.getElementById('yeniAd').value.trim();
   const sinif=document.getElementById('yeniSinif').value.trim();
   const veli=document.getElementById('yeniVeli').value.trim();
   const telefon=document.getElementById('yeniTelefon').value.trim();
   if(!ad){toast('Ad girin');return;}
   db.collection(KOL.ogrenciler).add({
-    no,ad,sinif,veli,telefon,
+    ad,sinif,veli,telefon,
     ekleyenUid:mevcutKullanici?.uid,
     ekleyen:mevcutAd||mevcutKullanici?.email,
     olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
   }).then(()=>{
     toast('✓ '+ad+' eklendi');
     modalKapat('ekleOverlay');
-    ['yeniNo','yeniAd','yeniSinif','yeniVeli','yeniTelefon'].forEach(i=>document.getElementById(i).value='');
+    ['yeniAd','yeniSinif','yeniVeli','yeniTelefon'].forEach(i=>document.getElementById(i).value='');
   }).catch(e=>toast('Hata: '+e.message));
 }
 
