@@ -247,7 +247,7 @@ textarea{min-height:65px;resize:vertical}
       <button class="btn btn-mavi" onclick="girisYap()">Giriş Yap</button>
     </div>
     <div id="s-kayit" class="ic-sekme">
-      <div class="form-grup"><label>Ad Soyad</label><input type="text" id="kayitAd" placeholder="Fatma Kaya"></div>
+      <div class="form-grup"><label>Ad Soyad</label><input type="text" id="kayitAd" placeholder=" "></div>
       <div class="form-grup"><label>E-posta</label><input type="email" id="kayitEmail" placeholder="ornek@okul.edu.tr"></div>
       <div class="form-grup"><label>Şifre</label><input type="password" id="kayitSifre" placeholder="En az 6 karakter"></div>
       <div class="form-grup"><label>Rolünüz</label>
@@ -426,8 +426,9 @@ textarea{min-height:65px;resize:vertical}
   <div class="modal">
     <div class="modal-baslik"><span>Yeni Öğrenci Ekle</span><button class="kapat-btn" onclick="modalKapat('ekleOverlay')">✕</button></div>
     <div class="modal-icerik">
+      <div class="form-grup"><label>Okul No</label><input type="text" id="yeniNo" placeholder=" "></div>
       <div class="form-grup"><label>Ad Soyad</label><input type="text" id="yeniAd" placeholder=" "></div>
-      <div class="form-grup"><label>Sınıf / No</label><input type="text" id="yeniSinif" placeholder="9-A"></div>
+      <div class="form-grup"><label>Sınıf</label><input type="text" id="yeniSinif" placeholder="9-A"></div>
       <div class="form-grup"><label>Veli Adı</label><input type="text" id="yeniVeli" placeholder=" "></div>
       <div class="form-grup"><label>Veli Telefonu</label><input type="text" id="yeniTelefon" placeholder="0532 xxx xx xx"></div>
       <button class="btn btn-mavi" onclick="ogrenciEkle()">Ekle</button>
@@ -441,6 +442,7 @@ textarea{min-height:65px;resize:vertical}
   <div class="modal">
     <div class="modal-baslik"><span>✏️ Öğrenci Düzenle</span><button class="kapat-btn" onclick="modalKapat('duzenleOverlay')">✕</button></div>
     <div class="modal-icerik">
+      <div class="form-grup"><label>Okul No</label><input type="text" id="duzNo"></div>
       <div class="form-grup"><label>Ad Soyad</label><input type="text" id="duzAd"></div>
       <div class="form-grup"><label>Sınıf / No</label><input type="text" id="duzSinif"></div>
       <div class="form-grup"><label>Veli Adı</label><input type="text" id="duzVeli"></div>
