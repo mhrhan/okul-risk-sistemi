@@ -936,20 +936,21 @@ function mudahaleEkleDetay(){ modalKapat('detayOverlay'); ekranGoster('mudahale'
 // ═══════════════════════════════════════════════
 function ogrenciEkleAc(){ document.getElementById('ekleOverlay').classList.add('aktif'); }
 function ogrenciEkle(){
+  const no=document.getElementById('yeniNo').value.trim();
   const ad=document.getElementById('yeniAd').value.trim();
   const sinif=document.getElementById('yeniSinif').value.trim();
   const veli=document.getElementById('yeniVeli').value.trim();
   const telefon=document.getElementById('yeniTelefon').value.trim();
   if(!ad){toast('Ad girin');return;}
   db.collection(KOL.ogrenciler).add({
-    ad,sinif,veli,telefon,
+    no,ad,sinif,veli,telefon,
     ekleyenUid:mevcutKullanici?.uid,
     ekleyen:mevcutAd||mevcutKullanici?.email,
     olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
   }).then(()=>{
     toast('✓ '+ad+' eklendi');
     modalKapat('ekleOverlay');
-    ['yeniAd','yeniSinif','yeniVeli','yeniTelefon'].forEach(i=>document.getElementById(i).value='');
+    ['yeniNo','yeniAd','yeniSinif','yeniVeli','yeniTelefon'].forEach(i=>document.getElementById(i).value='');
   }).catch(e=>toast('Hata: '+e.message));
 }
 
