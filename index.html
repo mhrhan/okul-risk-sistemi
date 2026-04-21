@@ -156,6 +156,16 @@ textarea{min-height:65px;resize:vertical}
 .arama-row input{flex:1}
 .arama-row select{width:auto;min-width:90px}
 
+/* SINIF GRUPLARI */
+.sinif-grup{}
+.sinif-baslik{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:var(--radius-sm) var(--radius-sm) 0 0;margin-bottom:0;font-size:13px}
+
+/* SİL / DÜZENLE BUTONLARI */
+.islem-btn{border:none;background:var(--gri2);border-radius:6px;padding:6px 8px;font-size:14px;cursor:pointer;line-height:1;transition:background 0.15s}
+.islem-btn:active{transform:scale(0.9)}
+.duzenle-btn:hover{background:var(--mavi-cok-ac)}
+.sil-btn:hover{background:var(--kirmizi-ac)}
+
 /* ERİŞİM ENGEL */
 .erisim-engel{text-align:center;padding:30px 20px;color:var(--yazi2)}
 .erisim-engel .ikon-buyuk{font-size:40px;margin-bottom:8px}
@@ -380,6 +390,21 @@ textarea{min-height:65px;resize:vertical}
       <div class="form-grup"><label>Veli Telefonu</label><input type="text" id="yeniTelefon" placeholder="0532 xxx xx xx"></div>
       <button class="btn btn-mavi" onclick="ogrenciEkle()">Ekle</button>
       <button class="btn btn-beyaz" onclick="modalKapat('ekleOverlay')">İptal</button>
+    </div>
+  </div>
+</div>
+
+<!-- ÖĞRENCİ DÜZENLE MODAL -->
+<div class="overlay" id="duzenleOverlay">
+  <div class="modal">
+    <div class="modal-baslik"><span>✏️ Öğrenci Bilgilerini Düzenle</span><button class="kapat-btn" onclick="modalKapat('duzenleOverlay')">✕</button></div>
+    <div class="modal-icerik">
+      <div class="form-grup"><label>Ad Soyad</label><input type="text" id="duzAd" placeholder="Ahmet Yıldız"></div>
+      <div class="form-grup"><label>Sınıf / No</label><input type="text" id="duzSinif" placeholder="9-A / 15"></div>
+      <div class="form-grup"><label>Veli Adı</label><input type="text" id="duzVeli" placeholder="Mehmet Yıldız"></div>
+      <div class="form-grup"><label>Veli Telefonu</label><input type="text" id="duzTelefon" placeholder="0532 xxx xx xx"></div>
+      <button class="btn btn-mavi" onclick="ogrenciDuzenleKaydet()">✓ Kaydet</button>
+      <button class="btn btn-beyaz" onclick="modalKapat('duzenleOverlay')">İptal</button>
     </div>
   </div>
 </div>
@@ -619,8 +644,8 @@ function trendIkon(t) {
 // ══════════════════════════════════════════
 // ROL TABANLI ERİŞİM
 // ══════════════════════════════════════════
-// Öğretmen: yalnızca kendi girdiği değerlendirmeler + o öğrenciler
-// Rehberlik / Müdür: tümü
+// Öğretmen: kendi değerlendirmeleri görünür; tüm öğrencileri listeleyebilir/ekleyebilir
+// Rehberlik / Müdür: her şeyi görür
 function gorulecekDegerlendirmeler() {
   if (!mevcutKullaniciRol) return [];
   if (mevcutKullaniciRol === 'ogretmen') {
@@ -629,12 +654,9 @@ function gorulecekDegerlendirmeler() {
   return degerlendirmeler;
 }
 
+// Tüm roller tüm öğrencileri görebilir (ekleme/form için gerekli)
 function gorulecekOgrenciler() {
   if (!mevcutKullaniciRol) return [];
-  if (mevcutKullaniciRol === 'ogretmen') {
-    const kisiIds = new Set(gorulecekDegerlendirmeler().map(d => d.ogrenciId));
-    return ogrenciler.filter(o => kisiIds.has(o.id));
-  }
   return ogrenciler;
 }
 
@@ -709,32 +731,69 @@ function anasayfaRenderEt() {
 // ÖĞRENCİ LİSTESİ
 // ══════════════════════════════════════════
 function ogrencileriRenderEt() {
-  const arama = (document.getElementById('aramaInput')?.value||'').toLowerCase();
+  const arama  = (document.getElementById('aramaInput')?.value||'').toLowerCase();
   const filtre = document.getElementById('filtreSeviye')?.value || '';
   const gorDev = gorulecekDegerlendirmeler();
-  const gorOgr = gorulecekOgrenciler();
 
-  const puanli = gorOgr.map(o => {
+  const puanli = ogrenciler.map(o => {
     const devs = gorDev.filter(d => d.ogrenciId === o.id);
-    const son = devs.length ? devs[devs.length-1] : null;
+    const son  = devs.length ? devs[devs.length-1] : null;
     return { ...o, puan: son?.puan||0, seviye: son?.riskSeviyesi||'DÜŞÜK', sayisi: devs.length, trend: trendHesapla(o.id) };
   }).filter(o => (!arama || o.ad.toLowerCase().includes(arama)) && (!filtre || o.seviye === filtre))
-    .sort((a,b) => b.puan - a.puan);
+    .sort((a,b) => {
+      // Önce sınıfa göre, sonra riske göre sırala
+      const sinifA = a.sinif || 'zzz';
+      const sinifB = b.sinif || 'zzz';
+      if (sinifA !== sinifB) return sinifA.localeCompare(sinifB, 'tr');
+      return b.puan - a.puan;
+    });
 
   const el = document.getElementById('ogrenciListesi');
-  el.innerHTML = puanli.length
-    ? puanli.map(o => `<div class="ogrenci-satir" onclick="ogrenciDetay('${o.id}')">
-        <div class="avatar" style="background:${avatarRenk(o.seviye)};color:${avatarRenkYazi(o.seviye)}">${o.ad.charAt(0)}</div>
-        <div class="ogrenci-bilgi">
-          <div class="ogrenci-ad">${o.ad}</div>
-          <div class="ogrenci-alt">${o.sinif||'—'} · ${o.sayisi} değerlendirme · ${trendIkon(o.trend)}</div>
+  if (!puanli.length) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--yazi2);font-size:13px">Öğrenci bulunamadı</div>';
+    return;
+  }
+
+  // Sınıflara göre grupla
+  const siniflar = {};
+  puanli.forEach(o => {
+    const sinifAdi = o.sinif || 'Sınıf Girilmemiş';
+    if (!siniflar[sinifAdi]) siniflar[sinifAdi] = [];
+    siniflar[sinifAdi].push(o);
+  });
+
+  const yoneticiMi = mevcutKullaniciRol === 'mudur' || mevcutKullaniciRol === 'rehberlik';
+
+  el.innerHTML = Object.entries(siniflar).map(([sinifAdi, grup]) => {
+    const kritikSayi = grup.filter(o => o.seviye === 'KRİTİK').length;
+    const sinifRenk  = kritikSayi > 0 ? 'var(--kirmizi-ac)' : grup.some(o=>o.seviye==='YÜKSEK') ? 'var(--sari-ac)' : 'var(--mavi-cok-ac)';
+    const satirlar   = grup.map(o => `
+      <div class="ogrenci-satir">
+        <div onclick="ogrenciDetay('${o.id}')" style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer">
+          <div class="avatar" style="background:${avatarRenk(o.seviye)};color:${avatarRenkYazi(o.seviye)}">${o.ad.charAt(0)}</div>
+          <div class="ogrenci-bilgi">
+            <div class="ogrenci-ad">${o.ad}</div>
+            <div class="ogrenci-alt">${o.sayisi} değerlendirme · ${trendIkon(o.trend)}</div>
+          </div>
+          <div class="puan-col" style="margin-right:8px">
+            <div class="puan-sayi" style="color:${avatarRenkYazi(o.seviye)}">${o.puan}</div>
+            <span class="rozet ${rozetSinifi(o.seviye)}">${o.seviye}</span>
+          </div>
         </div>
-        <div class="puan-col">
-          <div class="puan-sayi" style="color:${avatarRenkYazi(o.seviye)}">${o.puan}</div>
-          <span class="rozet ${rozetSinifi(o.seviye)}">${o.seviye}</span>
+        <div style="display:flex;gap:5px;flex-shrink:0">
+          <button class="islem-btn duzenle-btn" onclick="event.stopPropagation();ogrenciDuzenleAc('${o.id}')" title="Düzenle">✏️</button>
+          ${yoneticiMi ? `<button class="islem-btn sil-btn" onclick="event.stopPropagation();ogrenciSilOnayla('${o.id}')" title="Sil">🗑</button>` : ''}
         </div>
-      </div>`).join('')
-    : '<div style="text-align:center;padding:20px;color:var(--yazi2);font-size:13px">Öğrenci bulunamadı</div>';
+      </div>`).join('');
+
+    return `<div class="sinif-grup" style="margin-bottom:14px">
+      <div class="sinif-baslik" style="background:${sinifRenk}">
+        <span style="font-weight:800">${sinifAdi}</span>
+        <span style="font-size:12px;opacity:0.8">${grup.length} öğrenci${kritikSayi>0?' · ⚠️ '+kritikSayi+' kritik':''}</span>
+      </div>
+      <div class="kart" style="margin-bottom:0;padding:4px 12px">${satirlar}</div>
+    </div>`;
+  }).join('');
 }
 
 // ══════════════════════════════════════════
@@ -870,9 +929,53 @@ function ogrenciEkle() {
   const veli = document.getElementById('yeniVeli').value.trim();
   const telefon = document.getElementById('yeniTelefon').value.trim();
   if (!ad) { toast('Ad girin'); return; }
-  db.collection(KOL.ogrenciler).add({ ad, sinif, veli, telefon, olusturuldu: firebase.firestore.FieldValue.serverTimestamp() })
-    .then(() => { toast(ad + ' eklendi'); modalKapat('ekleOverlay'); ['yeniAd','yeniSinif','yeniVeli','yeniTelefon'].forEach(id => document.getElementById(id).value=''); })
-    .catch(() => toast('Hata oluştu'));
+  db.collection(KOL.ogrenciler).add({
+    ad, sinif, veli, telefon,
+    ekleyenUid: mevcutKullanici?.uid,
+    ekleyen: mevcutKullaniciAd || mevcutKullanici?.email,
+    olusturuldu: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    toast('✓ ' + ad + ' eklendi');
+    modalKapat('ekleOverlay');
+    ['yeniAd','yeniSinif','yeniVeli','yeniTelefon'].forEach(id => document.getElementById(id).value='');
+  }).catch(e => toast('Hata: ' + e.message));
+}
+
+// ── DÜZENLE ──
+let duzenleId = null;
+function ogrenciDuzenleAc(id) {
+  const o = ogrenciler.find(s => s.id === id);
+  if (!o) return;
+  duzenleId = id;
+  document.getElementById('duzAd').value = o.ad || '';
+  document.getElementById('duzSinif').value = o.sinif || '';
+  document.getElementById('duzVeli').value = o.veli || '';
+  document.getElementById('duzTelefon').value = o.telefon || '';
+  document.getElementById('duzenleOverlay').classList.add('aktif');
+}
+function ogrenciDuzenleKaydet() {
+  if (!duzenleId) return;
+  const ad = document.getElementById('duzAd').value.trim();
+  if (!ad) { toast('Ad boş olamaz'); return; }
+  db.collection(KOL.ogrenciler).doc(duzenleId).update({
+    ad,
+    sinif: document.getElementById('duzSinif').value.trim(),
+    veli:  document.getElementById('duzVeli').value.trim(),
+    telefon: document.getElementById('duzTelefon').value.trim(),
+    guncelleyen: mevcutKullaniciAd || mevcutKullanici?.email,
+    guncellenmeTarihi: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => { toast('✓ Bilgiler güncellendi'); modalKapat('duzenleOverlay'); duzenleId = null; })
+    .catch(e => toast('Hata: ' + e.message));
+}
+
+// ── SİL ──
+function ogrenciSilOnayla(id) {
+  const o = ogrenciler.find(s => s.id === id);
+  if (!o) return;
+  if (!confirm(`"${o.ad}" adlı öğrenciyi silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz. Öğrenciye ait tüm değerlendirme ve müdahale kayıtları Firebase'de kalır.`)) return;
+  db.collection(KOL.ogrenciler).doc(id).delete()
+    .then(() => toast('🗑 ' + o.ad + ' silindi'))
+    .catch(e => toast('Hata: ' + e.message));
 }
 
 // ══════════════════════════════════════════
@@ -994,24 +1097,33 @@ auth.onAuthStateChanged(kullanici => {
 // VERİ YÜKLEME
 // ══════════════════════════════════════════
 function verileriYukle() {
-  db.collection(KOL.ogrenciler).orderBy('ad').onSnapshot(snap => {
-    ogrenciler = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-    selectleriGuncelle();
-    ogrencileriRenderEt();
-    anasayfaRenderEt();
-    // Değerlendirene adını güncelle
+  // orderBy kaldırıldı — Firestore index gerektirmeden çalışır, sıralama client-side yapılır
+  db.collection(KOL.ogrenciler).onSnapshot(snap => {
+    ogrenciler = snap.docs.map(d => ({ id:d.id, ...d.data() }))
+      .sort((a,b) => (a.ad||'').localeCompare(b.ad||'', 'tr'));
     if (mevcutKullaniciAd) document.getElementById('formDegerlendiren').value = mevcutKullaniciAd;
-  });
-  db.collection(KOL.degerlendirmeler).orderBy('olusturuldu','asc').onSnapshot(snap => {
-    degerlendirmeler = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+    selectleriGuncelle();
+    ogrencileriRenderEt();
+    anasayfaRenderEt();
+  }, err => { console.error('ogrenciler snapshot hatası:', err); toast('Veri yüklenemedi: ' + err.message); });
+
+  db.collection(KOL.degerlendirmeler).onSnapshot(snap => {
+    degerlendirmeler = snap.docs.map(d => ({ id:d.id, ...d.data() }))
+      .sort((a,b) => {
+        const ta = a.olusturuldu?.seconds || 0;
+        const tb = b.olusturuldu?.seconds || 0;
+        return ta - tb;
+      });
     anasayfaRenderEt();
     ogrencileriRenderEt();
     selectleriGuncelle();
-  });
-  db.collection(KOL.mudahaleler).orderBy('olusturuldu','desc').onSnapshot(snap => {
-    mudahaleler = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+  }, err => console.error('degerlendirmeler hatası:', err));
+
+  db.collection(KOL.mudahaleler).onSnapshot(snap => {
+    mudahaleler = snap.docs.map(d => ({ id:d.id, ...d.data() }))
+      .sort((a,b) => (b.olusturuldu?.seconds||0) - (a.olusturuldu?.seconds||0));
     mudahaleGecmisiniRenderEt();
-  });
+  }, err => console.error('mudahaleler hatası:', err));
 }
 
 // ══════════════════════════════════════════
