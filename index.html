@@ -188,12 +188,12 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
     </div>
     <div id="onayBekleyenBanner"></div>
     <div id="kritikBanner"></div>
-    <!-- Kullanıcı Filtresi -->
+    <!-- Kullanıcı Filtresi — açılır menü -->
     <div class="kart" style="padding:12px 14px;margin-bottom:14px">
       <div style="font-size:11px;font-weight:700;color:var(--yazi2);margin-bottom:6px">👤 KULLANICI FİLTRESİ</div>
-      <div class="cb-alani" id="kullaniciCbAlani">
-        <label class="cb-etiket cb-tumu"><input type="checkbox" id="cbTumKullanicilar" checked onchange="tumKullaniciCb(this)"> Tümü</label>
-      </div>
+      <select id="kullaniciFiltreSel" onchange="kullaniciSeldegisti()" style="width:100%">
+        <option value="">— Tümünü göster —</option>
+      </select>
     </div>
     <div class="kart">
       <div class="kart-baslik"><span class="kart-baslik-sol">⚠️ Acil Takip Listesi</span></div>
@@ -207,6 +207,11 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
 
   <!-- ÖĞRENCİLER -->
   <div id="ekran-ogrenciler" class="ekran">
+    <!-- Butonlar en üstte -->
+    <div class="btn-satir" style="margin-bottom:12px">
+      <button class="btn btn-mavi" onclick="ogrenciEkleAc()">+ Yeni Öğrenci</button>
+      <button class="btn btn-yesil" onclick="topluYazdirAc()">🖨 Toplu Yazdır</button>
+    </div>
     <div class="kart" style="margin-bottom:10px;padding:12px 14px">
       <div class="arama-row">
         <input type="text" id="aramaInput" placeholder="🔍  Öğrenci ara..." maxlength="60" oninput="ogrencileriRenderEt()">
@@ -219,15 +224,11 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
         </select>
       </div>
       <div style="font-size:11px;font-weight:700;color:var(--yazi2);margin-bottom:6px">SINIF FİLTRESİ</div>
-      <div class="cb-alani" id="sinifCbAlani">
-        <label class="cb-etiket cb-tumu"><input type="checkbox" id="cbTumSiniflar" checked onchange="tumSinifCb(this)"> Tümü</label>
-      </div>
+      <select id="sinifFiltreSel" onchange="sinifSeldegisti()" style="width:100%">
+        <option value="">— Tüm sınıfları göster —</option>
+      </select>
     </div>
     <div id="ogrenciListesiWrap"><div class="yukleniyor">Yükleniyor...</div></div>
-    <div class="btn-satir" style="margin-top:0">
-      <button class="btn btn-mavi" onclick="ogrenciEkleAc()">+ Yeni Öğrenci</button>
-      <button class="btn btn-yesil" onclick="topluYazdirAc()">🖨 Toplu Yazdır</button>
-    </div>
   </div>
 
   <!-- FORM -->
@@ -235,6 +236,10 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
     <div class="kart">
       <div class="kart-baslik"><span class="kart-baslik-sol">📋 Risk Değerlendirme Formu</span></div>
       <div class="bilgi-banner">ℹ️ Bu form bir tanı aracı değildir. Gözlemler, riskleri somutlaştırmak ve üzerinde çalışmak içindir.</div>
+      <div class="form-grup">
+        <label>Sınıf seç</label>
+        <select id="formSinif" onchange="formSinifDegisti()"><option value="">— Önce sınıf seçin —</option></select>
+      </div>
       <div class="form-grup">
         <label>Öğrenci seç</label>
         <select id="formOgrenci" onchange="formOgrenciDegisti()"><option value="">— Öğrenci seçin —</option></select>
@@ -296,7 +301,15 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
     </div>
     <div class="kart">
       <div class="kart-baslik"><span class="kart-baslik-sol">📋 Müdahale Geçmişi</span></div>
-      <div id="mudahaleGecmisi"><div class="yukleniyor">Yükleniyor...</div></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <select id="mudGecmisSinif" onchange="mudGecmisSinifDegisti()" style="flex:1">
+          <option value="">— Sınıf seçin —</option>
+        </select>
+        <select id="mudGecmisOgrenci" onchange="mudahaleGecmisiniRenderEt()" style="flex:1">
+          <option value="">— Öğrenci seçin —</option>
+        </select>
+      </div>
+      <div id="mudahaleGecmisi"><div style="color:var(--yazi2);font-size:13px;padding:8px 0">Sınıf veya öğrenci seçin.</div></div>
     </div>
   </div>
 
@@ -364,6 +377,7 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
       <div class="form-grup"><label>Okul No</label><input type="text" id="yeniOkulNo" maxlength="20"></div>
       <div class="form-grup"><label>Ad Soyad</label><input type="text" id="yeniAd" maxlength="60"></div>
       <div class="form-grup"><label>Sınıf</label><input type="text" id="yeniSinif" maxlength="20"></div>
+      <div class="form-grup"><label>Devamsızlık (gün)</label><input type="text" id="yeniDevamsizlik" maxlength="6" placeholder="0"></div>
       <div class="form-grup"><label>Veli Adı</label><input type="text" id="yeniVeli" maxlength="60"></div>
       <div class="form-grup"><label>Veli Telefonu</label><input type="text" id="yeniTelefon" maxlength="20"></div>
       <button class="btn btn-mavi" onclick="ogrenciEkle()">Ekle</button>
@@ -380,6 +394,7 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
       <div class="form-grup"><label>Okul No</label><input type="text" id="duzOkulNo" maxlength="20"></div>
       <div class="form-grup"><label>Ad Soyad</label><input type="text" id="duzAd" maxlength="60"></div>
       <div class="form-grup"><label>Sınıf</label><input type="text" id="duzSinif" maxlength="20"></div>
+      <div class="form-grup"><label>Devamsızlık (gün)</label><input type="text" id="duzDevamsizlik" maxlength="6"></div>
       <div class="form-grup"><label>Veli Adı</label><input type="text" id="duzVeli" maxlength="60"></div>
       <div class="form-grup"><label>Veli Telefonu</label><input type="text" id="duzTelefon" maxlength="20"></div>
       <button class="btn btn-mavi" onclick="ogrenciDuzenleKaydet()">✓ Kaydet</button>
@@ -519,8 +534,8 @@ const MAKS_KORUYUCU=Object.values(KRITERLER).filter(b=>b.tipi==='koruyucu').flat
 let ogrenciler=[],degerlendirmeler=[],mudahaleler=[],kullanicilar=[];
 let mevcutKullanici=null,mevcutRol=null,mevcutAd=null,adminMi=false;
 let dagilimChart=null,riskChart=null;
-let secilenSiniflar=new Set(['__TUM__']);
-let secilenKullanicilar=new Set(['__TUM__']);
+let secilenSinifFiltre='';    // '' = tümünü göster
+let secilenKullaniciFiltre=''; // '' = tümünü göster
 let detayAcikId=null,duzenleId=null,kdUid=null;
 
 // ════════════════════════════════════════════
@@ -715,12 +730,12 @@ function formuKaydet(){
 // ANASAYFA
 // ════════════════════════════════════════════
 function anasayfaRenderEt(){
-  // Kullanıcı filtresi: hangi öğrenciler gösterilsin?
+  // Kullanıcı filtresi: seçili uid varsa sadece o kullanıcının öğrencileri
   let filtreliOgr=ogrenciler;
-  if(!secilenKullanicilar.has('__TUM__')){
+  if(secilenKullaniciFiltre){
     const gosterilecekIds=new Set();
-    degerlendirmeler.forEach(d=>{if(secilenKullanicilar.has(d.degerlendirenUid))gosterilecekIds.add(d.ogrenciId);});
-    ogrenciler.forEach(o=>{if(secilenKullanicilar.has(o.ekleyenUid))gosterilecekIds.add(o.id);});
+    degerlendirmeler.forEach(d=>{if(d.degerlendirenUid===secilenKullaniciFiltre)gosterilecekIds.add(d.ogrenciId);});
+    ogrenciler.forEach(o=>{if(o.ekleyenUid===secilenKullaniciFiltre)gosterilecekIds.add(o.id);});
     filtreliOgr=ogrenciler.filter(o=>gosterilecekIds.has(o.id));
   }
   const puanli=filtreliOgr.map(o=>{
@@ -764,66 +779,81 @@ function anasayfaRenderEt(){
 }
 
 // ════════════════════════════════════════════
-// KULLANICI FİLTRE CHECKBOX (Anasayfa)
+// KULLANICI FİLTRE SELECT (Anasayfa)
 // ════════════════════════════════════════════
 function kullaniciCbGuncelle(){
-  const alan=document.getElementById('kullaniciCbAlani');
-  // Temizle ve yeniden oluştur (mevcut "Tümü" butonu hariç)
-  [...alan.querySelectorAll('label[data-uid]')].forEach(l=>l.remove());
-  kullanicilar.filter(k=>k.onaylandi!==false).forEach(k=>{
-    const lbl=document.createElement('label');
-    lbl.className='cb-etiket';
-    lbl.setAttribute('data-uid',k.id);
-    lbl.innerHTML=`<input type="checkbox" data-uid="${k.id}" onchange="kullaniciCbDegisti()"> ${xss(k.ad||k.email)}`;
-    alan.appendChild(lbl);
-  });
+  const sel=document.getElementById('kullaniciFiltreSel');
+  if(!sel)return;
+  const aktifKullanicilar=kullanicilar
+    .filter(k=>k.onaylandi!==false)
+    .sort((a,b)=>(a.ad||'').localeCompare(b.ad||'','tr'));
+  sel.innerHTML='<option value="">— Tümünü göster —</option>'+
+    aktifKullanicilar.map(k=>`<option value="${k.id}">${xss(k.ad||k.email)}</option>`).join('');
+  // Seçili değer varsa koru
+  if(secilenKullaniciFiltre) sel.value=secilenKullaniciFiltre;
 }
-function tumKullaniciCb(cb){
-  document.querySelectorAll('#kullaniciCbAlani input[data-uid]').forEach(i=>i.checked=false);
-  secilenKullanicilar=new Set(['__TUM__']);
-  if(!cb.checked){cb.checked=true;}
-  anasayfaRenderEt();
-}
-function kullaniciCbDegisti(){
-  const tumBtn=document.getElementById('cbTumKullanicilar');
-  const secili=document.querySelectorAll('#kullaniciCbAlani input[data-uid]:checked');
-  if(!secili.length){tumBtn.checked=true;secilenKullanicilar=new Set(['__TUM__']);}
-  else{tumBtn.checked=false;secilenKullanicilar=new Set([...secili].map(i=>i.dataset.uid));}
+function kullaniciSeldegisti(){
+  secilenKullaniciFiltre=document.getElementById('kullaniciFiltreSel').value;
   anasayfaRenderEt();
 }
 
 // ════════════════════════════════════════════
-// SINIF CHECKBOX
+// SINIF FİLTRE SELECT
 // ════════════════════════════════════════════
 function sinifCbGuncelle(){
-  const alan=document.getElementById('sinifCbAlani');
-  [...alan.querySelectorAll('label[data-sinif]')].forEach(l=>l.remove());
   const siniflar=[...new Set(ogrenciler.map(o=>o.sinif||'Sınıf Girilmemiş'))].sort((a,b)=>a.localeCompare(b,'tr'));
-  siniflar.forEach(s=>{
-    const lbl=document.createElement('label');
-    lbl.className='cb-etiket';
-    lbl.setAttribute('data-sinif',s);
-    lbl.innerHTML=`<input type="checkbox" data-sinif="${xss(s)}" onchange="sinifCbDegisti()"> ${xss(s)}`;
-    alan.appendChild(lbl);
-  });
-  // Toplu sınıf güncelleme select
+  const ogrSel=document.getElementById('sinifFiltreSel');
+  if(ogrSel){
+    ogrSel.innerHTML='<option value="">— Tüm sınıfları göster —</option>'+
+      siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
+    if(secilenSinifFiltre) ogrSel.value=secilenSinifFiltre;
+  }
+  // Toplu sınıf güncelleme select (Yönetim paneli)
   const sel=document.getElementById('eskiSinifSec');
-  if(sel){
-    sel.innerHTML='<option value="">— Seçin —</option>'+siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
+  if(sel) sel.innerHTML='<option value="">— Seçin —</option>'+siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
+  // Form - sınıf seç
+  const formSel=document.getElementById('formSinif');
+  if(formSel){
+    const eski=formSel.value;
+    formSel.innerHTML='<option value="">— Önce sınıf seçin —</option>'+siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
+    if(eski) formSel.value=eski;
+  }
+  // Müdahale geçmiş sınıf filtresi
+  const mudSel=document.getElementById('mudGecmisSinif');
+  if(mudSel){
+    const eski2=mudSel.value;
+    mudSel.innerHTML='<option value="">— Sınıf seçin —</option>'+siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
+    if(eski2) mudSel.value=eski2;
   }
 }
-function tumSinifCb(cb){
-  document.querySelectorAll('#sinifCbAlani input[data-sinif]').forEach(i=>i.checked=false);
-  secilenSiniflar=new Set(['__TUM__']);
-  if(!cb.checked)cb.checked=true;
+function sinifSeldegisti(){
+  secilenSinifFiltre=document.getElementById('sinifFiltreSel').value;
   ogrencileriRenderEt();
 }
-function sinifCbDegisti(){
-  const tumBtn=document.getElementById('cbTumSiniflar');
-  const secili=document.querySelectorAll('#sinifCbAlani input[data-sinif]:checked');
-  if(!secili.length){tumBtn.checked=true;secilenSiniflar=new Set(['__TUM__']);}
-  else{tumBtn.checked=false;secilenSiniflar=new Set([...secili].map(i=>i.dataset.sinif));}
-  ogrencileriRenderEt();
+// Form sınıf değişince öğrenci listesini filtrele
+function formSinifDegisti(){
+  const sinif=document.getElementById('formSinif').value;
+  const sel=document.getElementById('formOgrenci');
+  sel.innerHTML='<option value="">— Öğrenci seçin —</option>';
+  if(!sinif){sel.innerHTML='<option value="">— Önce sınıf seçin —</option>';return;}
+  const filtreliOgr=ogrenciler.filter(o=>(o.sinif||'Sınıf Girilmemiş')===sinif)
+    .sort((a,b)=>{const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;return na!==nb?na-nb:(a.ad||'').localeCompare(b.ad||'','tr');});
+  sel.innerHTML='<option value="">— Öğrenci seçin —</option>'+
+    filtreliOgr.map(o=>`<option value="${o.id}">${o.okulNo?'['+xss(o.okulNo)+'] ':''} ${xss(o.ad)}</option>`).join('');
+  // Formu sıfırla
+  formuSifirla();
+}
+// Müdahale geçmiş sınıf değişince öğrenci select'i güncelle
+function mudGecmisSinifDegisti(){
+  const sinif=document.getElementById('mudGecmisSinif').value;
+  const sel=document.getElementById('mudGecmisOgrenci');
+  sel.innerHTML='<option value="">— Öğrenci seçin —</option>';
+  if(!sinif){mudahaleGecmisiniRenderEt();return;}
+  const filtreliOgr=ogrenciler.filter(o=>(o.sinif||'Sınıf Girilmemiş')===sinif)
+    .sort((a,b)=>{const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;return na!==nb?na-nb:(a.ad||'').localeCompare(b.ad||'','tr');});
+  sel.innerHTML='<option value="">— Tüm sınıf —</option>'+
+    filtreliOgr.map(o=>`<option value="${o.id}">${o.okulNo?'['+xss(o.okulNo)+'] ':''} ${xss(o.ad)}</option>`).join('');
+  mudahaleGecmisiniRenderEt();
 }
 
 // ════════════════════════════════════════════
@@ -832,28 +862,31 @@ function sinifCbDegisti(){
 function ogrencileriRenderEt(){
   const arama=(document.getElementById('aramaInput')?.value||'').toLowerCase();
   const filtre=document.getElementById('filtreSeviye')?.value||'';
+  const sinifFiltre=document.getElementById('sinifFiltreSel')?.value||secilenSinifFiltre;
   const puanli=ogrenciler.map(o=>{
     const son=ogrenciSonPuani(o.id);
     return{...o,...son,trend:trendHesapla(o.id)};
   }).filter(o=>{
     if(arama&&!((o.ad||'').toLowerCase().includes(arama)||(o.okulNo||'').includes(arama)))return false;
     if(filtre&&o.seviye!==filtre)return false;
-    if(!secilenSiniflar.has('__TUM__')){
+    if(sinifFiltre){
       const s=o.sinif||'Sınıf Girilmemiş';
-      if(!secilenSiniflar.has(s))return false;
+      if(s!==sinifFiltre)return false;
     }
     return true;
   }).sort((a,b)=>{
     const sa=a.sinif||'zzz';const sb=b.sinif||'zzz';
     if(sa!==sb)return sa.localeCompare(sb,'tr');
-    // Okul no sıralaması
     const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;
     if(na!==nb)return na-nb;
     return(a.ad||'').localeCompare(b.ad||'','tr');
   });
 
   const wrap=document.getElementById('ogrenciListesiWrap');
-  if(!puanli.length){wrap.innerHTML='<div class="kart" style="text-align:center;padding:20px;color:var(--yazi2);font-size:13px">Öğrenci bulunamadı</div>';return;}
+  if(!puanli.length){
+    wrap.innerHTML='<div class="kart" style="text-align:center;padding:20px;color:var(--yazi2);font-size:13px">Öğrenci bulunamadı</div>';
+    return;
+  }
 
   const siniflar={};
   puanli.forEach(o=>{const s=o.sinif||'Sınıf Girilmemiş';if(!siniflar[s])siniflar[s]=[];siniflar[s].push(o);});
@@ -867,25 +900,23 @@ function ogrencileriRenderEt(){
         <span style="font-size:12px;opacity:.75">${grup.length} öğrenci${kritikS>0?' · ⚠️ '+kritikS+' kritik':''}</span>
       </div>
       <div class="kart" style="margin-bottom:0;padding:4px 12px;border-radius:0 0 var(--radius) var(--radius)">
-        ${grup.map(o=>{
-          const benimMi=o.ekleyenUid===mevcutKullanici?.uid||tamYetkiMi();
-          return`<div class="ogrenci-satir">
-            <div class="avatar" style="background:${avatarRenk(o.seviye)};color:${avatarYazi(o.seviye)};cursor:pointer" onclick="ogrenciDetay('${o.id}')">${xss(o.ad.charAt(0))}</div>
-            <div class="ogrenci-bilgi" onclick="ogrenciDetay('${o.id}')">
-              <div class="ogrenci-ad">${ogrenciTamAdi(o)}</div>
-              <div class="ogrenci-alt">${o.sayisi} değerlendirme · ${trendIkon(o.trend)}</div>
-            </div>
-            <div class="puan-col" onclick="ogrenciDetay('${o.id}')" style="margin-right:6px">
-              <div class="puan-sayi" style="color:${avatarYazi(o.seviye)}">${o.puan}</div>
-              <span class="rozet ${rozetSinifi(o.seviye)}">${o.seviye}</span>
-            </div>
-            <div style="display:flex;gap:4px;flex-shrink:0">
-              ${benimMi?`<button class="islem-btn duzenle-btn" onclick="ogrenciDuzenleAc('${o.id}')" title="Düzenle">✏️</button>`:''}
-              <button class="islem-btn yazdir-btn-kucuk" onclick="tekliYazdirOgrenci('${o.id}')" title="Yazdır">🖨</button>
-              ${tamYetkiMi()?`<button class="islem-btn sil-btn" onclick="ogrenciSilOnayla('${o.id}')" title="Sil">🗑</button>`:''}
-            </div>
-          </div>`;
-        }).join('')}
+        ${grup.map(o=>`
+        <div class="ogrenci-satir">
+          <div class="avatar" style="background:${avatarRenk(o.seviye)};color:${avatarYazi(o.seviye)};cursor:pointer" onclick="ogrenciDetay('${o.id}')">${xss(o.ad.charAt(0))}</div>
+          <div class="ogrenci-bilgi" onclick="ogrenciDetay('${o.id}')">
+            <div class="ogrenci-ad">${ogrenciTamAdi(o)}</div>
+            <div class="ogrenci-alt">${o.sayisi} değerlendirme${o.devamsizlik?` · 📅 ${xss(o.devamsizlik)} gün`:''} · ${trendIkon(o.trend)}</div>
+          </div>
+          <div class="puan-col" onclick="ogrenciDetay('${o.id}')" style="margin-right:6px">
+            <div class="puan-sayi" style="color:${avatarYazi(o.seviye)}">${o.puan}</div>
+            <span class="rozet ${rozetSinifi(o.seviye)}">${o.seviye}</span>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0">
+            <button class="islem-btn duzenle-btn" onclick="ogrenciDuzenleAc('${o.id}')" title="Düzenle">✏️</button>
+            <button class="islem-btn yazdir-btn-kucuk" onclick="tekliYazdirOgrenci('${o.id}')" title="Yazdır">🖨</button>
+            ${tamYetkiMi()?`<button class="islem-btn sil-btn" onclick="ogrenciSilOnayla('${o.id}')" title="Sil">🗑</button>`:''}
+          </div>
+        </div>`).join('')}
       </div>
     </div>`;
   }).join('');
@@ -955,6 +986,7 @@ function ogrenciEkle(){
   db.collection(KOL.ogrenciler).add({
     okulNo:document.getElementById('yeniOkulNo').value.trim(),
     ad,sinif:document.getElementById('yeniSinif').value.trim(),
+    devamsizlik:document.getElementById('yeniDevamsizlik').value.trim(),
     veli:document.getElementById('yeniVeli').value.trim(),
     telefon:document.getElementById('yeniTelefon').value.trim(),
     ekleyenUid:mevcutKullanici?.uid,
@@ -963,7 +995,7 @@ function ogrenciEkle(){
   }).then(()=>{
     toast('✓ '+xss(ad)+' eklendi');
     modalKapat('ekleOverlay');
-    ['yeniOkulNo','yeniAd','yeniSinif','yeniVeli','yeniTelefon'].forEach(i=>document.getElementById(i).value='');
+    ['yeniOkulNo','yeniAd','yeniSinif','yeniDevamsizlik','yeniVeli','yeniTelefon'].forEach(i=>document.getElementById(i).value='');
   }).catch(e=>toast('Hata: '+xss(e.message)));
 }
 function ogrenciDuzenleAc(id){
@@ -972,6 +1004,7 @@ function ogrenciDuzenleAc(id){
   document.getElementById('duzOkulNo').value=o.okulNo||'';
   document.getElementById('duzAd').value=o.ad||'';
   document.getElementById('duzSinif').value=o.sinif||'';
+  document.getElementById('duzDevamsizlik').value=o.devamsizlik||'';
   document.getElementById('duzVeli').value=o.veli||'';
   document.getElementById('duzTelefon').value=o.telefon||'';
   document.getElementById('duzenleOverlay').classList.add('aktif');
@@ -983,6 +1016,7 @@ function ogrenciDuzenleKaydet(){
   db.collection(KOL.ogrenciler).doc(duzenleId).update({
     okulNo:document.getElementById('duzOkulNo').value.trim(),
     ad,sinif:document.getElementById('duzSinif').value.trim(),
+    devamsizlik:document.getElementById('duzDevamsizlik').value.trim(),
     veli:document.getElementById('duzVeli').value.trim(),
     telefon:document.getElementById('duzTelefon').value.trim(),
     guncelleyen:mevcutAd,guncellenmeTarihi:firebase.firestore.FieldValue.serverTimestamp()
@@ -1038,8 +1072,26 @@ function mudahaleSil(id){
 }
 function mudahaleGecmisiniRenderEt(){
   const el=document.getElementById('mudahaleGecmisi');
-  if(!mudahaleler.length){el.innerHTML='<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Henüz müdahale kaydı yok</div>';return;}
-  el.innerHTML=mudahaleler.slice(0,20).map(m=>{
+  const sinif=document.getElementById('mudGecmisSinif')?.value||'';
+  const ogrenciId=document.getElementById('mudGecmisOgrenci')?.value||'';
+
+  // Hiçbir seçim yapılmamışsa boş mesaj göster
+  if(!sinif&&!ogrenciId){
+    el.innerHTML='<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Sınıf veya öğrenci seçin.</div>';
+    return;
+  }
+
+  // Filtrele
+  let liste=mudahaleler;
+  if(ogrenciId){
+    liste=liste.filter(m=>m.ogrenciId===ogrenciId);
+  } else if(sinif){
+    const siniftakiIds=new Set(ogrenciler.filter(o=>(o.sinif||'Sınıf Girilmemiş')===sinif).map(o=>o.id));
+    liste=liste.filter(m=>siniftakiIds.has(m.ogrenciId));
+  }
+
+  if(!liste.length){el.innerHTML='<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Müdahale kaydı bulunamadı</div>';return;}
+  el.innerHTML=liste.slice(0,20).map(m=>{
     const o=ogrenciler.find(s=>s.id===m.ogrenciId);
     const tarih=m.olusturuldu?.toDate?m.olusturuldu.toDate().toLocaleDateString('tr-TR'):'—';
     const silBtn=mudahaleYetki()?`<button class="islem-btn sil-btn btn-kucuk" style="float:right;margin-top:-4px" onclick="mudahaleSil('${m.id}')" title="Sil">🗑</button>`:'';
@@ -1356,9 +1408,10 @@ auth.onAuthStateChanged(kullanici=>{
   if(kullanici){
     mevcutKullanici=kullanici;
     db.collection(KOL.kullanicilar).doc(kullanici.uid).get().then(doc=>{
-      // Admin email her zaman geçerli
+      // Admin email: Firestore'daki gerçek adı kullan (ör. "Mahir Han"),
+      // arka planda admin yetkisiyle çalış, arayüzde sadece adı görünsün
       if(kullanici.email===ADMIN_EMAIL){
-        const ad=doc.exists?(doc.data().ad||'Admin'):'Admin';
+        const ad=doc.exists?(doc.data().ad||kullanici.email):kullanici.email;
         baslatUygulama('admin',ad);return;
       }
       if(!doc.exists){gosterOnayBekliyor('Hesabınız bulunamadı veya silinmiş olabilir.');return;}
@@ -1375,8 +1428,10 @@ auth.onAuthStateChanged(kullanici=>{
 
 function baslatUygulama(rol,ad){
   mevcutRol=rol;mevcutAd=ad;adminMi=(rol==='admin');
-  const rolEt={ogretmen:'Öğretmen',rehberlik:'Rehberlik Uzmanı',mudur:'Müdür / İdare',admin:'Sistem Yöneticisi'};
+  const rolEt={ogretmen:'Öğretmen',rehberlik:'Rehberlik Uzmanı',mudur:'Müdür / İdare',admin:'Öğretmen'};
+  // Admin perde arkasında çalışır; navbar'da gerçek adı + normal rol etiketi görünür
   document.getElementById('navRol').textContent=(rolEt[rol]||rol)+' — '+xss(ad);
+  // ADMİN rozeti sadece admin kullanıcının kendi ekranında görünür
   document.getElementById('adminRozet').style.display=adminMi?'inline-block':'none';
   document.getElementById('formDegerlendiren').value=ad;
   // Yönetim butonu: admin, mudur, rehberlik için göster
