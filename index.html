@@ -1,1497 +1,1158 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Risk Takip">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval' data: blob:;">
-<title>Öğrenci Risk Değerlendirme Sistemi</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<style>
-:root{--mavi:#1565C0;--mavi-ac:#1e88e5;--mavi-cok-ac:#e3f2fd;--yesil:#2E7D32;--yesil-ac:#e8f5e9;--sari:#E65100;--sari-ac:#fff3e0;--kirmizi:#B71C1C;--kirmizi-ac:#ffebee;--mor:#6A1B9A;--altin:#F57F17;--gri:#f5f6fa;--gri2:#eceff1;--gri3:#dde1e7;--yazi:#1a1a2e;--yazi2:#546e7a;--beyaz:#fff;--golge:0 2px 12px rgba(0,0,0,0.09);--radius:14px;--radius-sm:8px}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gri);color:var(--yazi);min-height:100vh;padding-bottom:80px}
-.navbar{background:var(--mavi);color:white;padding:14px 16px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
-.navbar-left{display:flex;align-items:center;gap:8px}
-.navbar-title{font-size:15px;font-weight:700}
-.navbar-sub{font-size:11px;opacity:.8;margin-top:1px}
-.admin-rozet{background:var(--altin);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:10px}
-.cikis-btn{background:rgba(255,255,255,.15);border:none;color:white;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;border-top:1px solid #dde1e7;z-index:100;box-shadow:0 -2px 12px rgba(0,0,0,0.08)}
-.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px 10px;background:none;border:none;font-size:9px;color:var(--yazi2);cursor:pointer;gap:3px;font-family:inherit}
-.bnav-btn.aktif{color:var(--mavi)}
-.bnav-btn .ikon{font-size:19px}
-.bnav-btn.aktif .ikon{transform:scale(1.1)}
-.ekran{display:none;padding:14px}
-.ekran.aktif{display:block}
-.kart{background:var(--beyaz);border-radius:var(--radius);box-shadow:var(--golge);padding:16px;margin-bottom:14px}
-.kart-baslik{font-size:12px;font-weight:700;color:var(--yazi2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
-.kart-baslik-sol{display:flex;align-items:center;gap:6px}
-.bolum-baslik{font-size:13px;font-weight:800;color:var(--beyaz);padding:9px 13px;border-radius:var(--radius-sm);margin-bottom:10px}
-.b-mavi{background:var(--mavi-ac)}.b-mor{background:var(--mor)}.b-turuncu{background:var(--sari)}.b-kirmizi{background:var(--kirmizi)}.b-yesil{background:var(--yesil)}
-.metrik-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.metrik-kart{background:var(--beyaz);border-radius:var(--radius);box-shadow:var(--golge);padding:14px;text-align:center}
-.metrik-sayi{font-size:28px;font-weight:800}
-.metrik-etiket{font-size:11px;color:var(--yazi2);margin-top:2px}
-.m-kirmizi .metrik-sayi{color:var(--kirmizi)}.m-turuncu .metrik-sayi{color:var(--sari)}.m-mavi .metrik-sayi{color:var(--mavi)}.m-yesil .metrik-sayi{color:var(--yesil)}
-.form-grup{margin-bottom:12px}
-.form-grup label{display:block;font-size:12px;font-weight:600;color:var(--yazi2);margin-bottom:5px}
-input[type=text],input[type=email],input[type=password],select,textarea{width:100%;padding:11px 13px;border:1.5px solid var(--gri3);border-radius:var(--radius-sm);font-size:14px;background:var(--beyaz);color:var(--yazi);font-family:inherit;-webkit-appearance:none;transition:border .15s}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--mavi-ac);box-shadow:0 0 0 3px rgba(30,136,229,.12)}
-input[maxlength]{} textarea{min-height:65px;resize:vertical}
-.kriter-satiri{padding:10px 0;border-bottom:1px solid var(--gri2);display:flex;align-items:flex-start;gap:10px}
-.kriter-satiri:last-child{border-bottom:none}
-.kriter-metin{flex:1;font-size:13px;line-height:1.5;color:var(--yazi)}
-.kriter-kontroller{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-top:1px}
-.var-btn,.yok-btn{border:1.5px solid;border-radius:6px;padding:4px 9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
-.var-btn{border-color:#ef9a9a;color:var(--kirmizi);background:transparent}
-.var-btn.aktif{background:var(--kirmizi);color:white;border-color:var(--kirmizi)}
-.var-btn.olumlu{border-color:#a5d6a7;color:var(--yesil)}
-.var-btn.olumlu.aktif{background:var(--yesil);color:white;border-color:var(--yesil)}
-.yok-btn{border-color:#a5d6a7;color:var(--yesil);background:transparent}
-.yok-btn.aktif{background:var(--yesil);color:white;border-color:var(--yesil)}
-.not-input{font-size:12px;padding:5px 8px;border:1px solid var(--gri3);border-radius:6px;width:100%;margin-top:5px;font-family:inherit}
-.puan-onizleme{background:var(--gri2);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;margin:12px 0}
-.puan-onizleme-sayi{font-size:28px;font-weight:900}
-.rozet{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:.4px}
-.r-dusuk{background:var(--yesil-ac);color:var(--yesil)}.r-orta{background:var(--sari-ac);color:var(--sari)}.r-yuksek{background:#fff3e0;color:#bf360c}.r-kritik{background:var(--kirmizi-ac);color:var(--kirmizi)}
-.btn{display:block;width:100%;padding:13px;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;text-align:center;margin-top:8px}
-.btn:active{transform:scale(.97)}
-.btn-mavi{background:var(--mavi-ac);color:white}.btn-beyaz{background:var(--gri2);color:var(--yazi)}.btn-yesil{background:var(--yesil);color:white}.btn-kirmizi{background:var(--kirmizi);color:white}
-.btn-kucuk{display:inline-block;width:auto;padding:6px 14px;font-size:12px;margin-top:0}
-.btn-satir{display:flex;gap:8px;margin-top:8px}
-.btn-satir .btn{flex:1;margin-top:0}
-.ogrenci-satir{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid var(--gri2);gap:10px}
-.ogrenci-satir:last-child{border-bottom:none}
-.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
-.ogrenci-bilgi{flex:1;min-width:0;cursor:pointer}
-.ogrenci-ad{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ogrenci-alt{font-size:12px;color:var(--yazi2);margin-top:1px}
-.puan-col{text-align:right;cursor:pointer;flex-shrink:0}
-.puan-sayi{font-size:17px;font-weight:800}
-.uyari-banner{background:var(--kirmizi-ac);border:1.5px solid #ef9a9a;border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;color:var(--kirmizi);font-weight:600;margin-bottom:14px;display:flex;gap:8px;align-items:flex-start}
-.bilgi-banner{background:var(--mavi-cok-ac);border:1.5px solid #90caf9;border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--mavi);margin-bottom:12px}
-.onay-banner{background:#fff8e1;border:1.5px solid #ffd54f;border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:#e65100;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
-.trend-yuksek{color:var(--kirmizi);font-weight:800}.trend-dusuk{color:var(--yesil);font-weight:800}.trend-sabit{color:var(--yazi2);font-weight:600}
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;overflow-y:auto;padding:16px}
-.overlay.aktif{display:block}
-.modal{background:var(--beyaz);border-radius:var(--radius);max-width:520px;margin:0 auto;overflow:hidden}
-.modal-baslik{background:var(--mavi);color:white;padding:16px;display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:700}
-.modal-icerik{padding:16px}
-.kapat-btn{background:rgba(255,255,255,.2);border:none;color:white;border-radius:6px;padding:4px 10px;font-size:18px;cursor:pointer;font-family:inherit}
-.grafik-alan{position:relative;height:200px;margin:10px 0}
-.giris-ekran{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;background:linear-gradient(160deg,#1565C0 0%,#1e88e5 60%,#42a5f5 100%)}
-.giris-logo{font-size:48px;margin-bottom:10px}
-.giris-baslik{color:white;font-size:22px;font-weight:800;text-align:center;margin-bottom:4px}
-.giris-altyazi{color:rgba(255,255,255,.8);font-size:13px;text-align:center;margin-bottom:30px}
-.giris-kart{background:white;border-radius:20px;padding:24px 20px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.18)}
-.tab-row{display:flex;margin-bottom:18px;border-radius:var(--radius-sm);overflow:hidden;border:1.5px solid var(--mavi-ac)}
-.tab-btn{flex:1;padding:9px;border:none;background:none;font-size:13px;font-weight:700;cursor:pointer;color:var(--mavi-ac);font-family:inherit}
-.tab-btn.aktif{background:var(--mavi-ac);color:white}
-.ic-sekme{display:none}.ic-sekme.aktif{display:block}
-.gozlem-satir{padding:10px 0;border-bottom:1px solid var(--gri2);font-size:13px}
-.gozlem-satir:last-child{border-bottom:none}
-.gozlem-tarih{font-size:11px;color:var(--yazi2);margin-bottom:4px}
-.gozlem-degerler{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
-.gd{background:var(--gri2);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
-.gd-var{background:var(--kirmizi-ac);color:var(--kirmizi)}
-.gd-olumlu{background:var(--yesil-ac);color:var(--yesil)}
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#323232;color:white;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:500;opacity:0;transition:opacity .3s;white-space:nowrap;pointer-events:none;max-width:90vw;text-align:center}
-.toast.goster{opacity:1}
-.arama-row{display:flex;gap:8px;margin-bottom:10px}
-.arama-row input{flex:1}
-.arama-row select{width:auto;min-width:85px}
-.cb-alani{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.cb-etiket{display:flex;align-items:center;gap:5px;background:var(--gri2);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;user-select:none;border:1.5px solid transparent;transition:all .15s}
-.cb-etiket:has(input:checked){background:var(--mavi-cok-ac);border-color:var(--mavi-ac);color:var(--mavi)}
-.cb-etiket input{display:none}
-.cb-tumu{background:var(--mavi-ac);color:white;border-color:var(--mavi-ac)}
-.cb-tumu:has(input:checked){background:var(--mavi-ac);color:white}
-.sinif-grup{margin-bottom:14px}
-.sinif-baslik{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:var(--radius-sm) var(--radius-sm) 0 0;font-size:13px}
-.islem-btn{border:none;background:var(--gri2);border-radius:6px;padding:6px 8px;font-size:13px;cursor:pointer;line-height:1;transition:background .15s;flex-shrink:0}
-.islem-btn:active{transform:scale(.9)}
-.duzenle-btn:hover{background:var(--mavi-cok-ac)}
-.sil-btn:hover{background:var(--kirmizi-ac)}
-.yazdir-btn-kucuk:hover{background:#e8f5e9}
-.yukleniyor{text-align:center;padding:24px;color:var(--yazi2);font-size:14px}
-.yazdir-onizleme{max-height:60vh;overflow-y:auto;border:1px solid var(--gri3);border-radius:var(--radius-sm);padding:8px;background:var(--gri);margin-bottom:12px}
-.kullanici-satir{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gri2)}
-.kullanici-satir:last-child{border-bottom:none}
-.onay-bekliyor-ekran{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;background:linear-gradient(160deg,#1565C0 0%,#1e88e5 60%,#42a5f5 100%);text-align:center}
-</style>
-</head>
-<body>
-
-<!-- GİRİŞ -->
-<div id="girisEkrani" class="giris-ekran">
-  <div class="giris-logo">🏫</div>
-  <div class="giris-baslik">Okul Risk Takip</div>
-  <div class="giris-altyazi">Bireysel Erken Uyarı ve Müdahale Sistemi</div>
-  <div class="giris-kart">
-    <div class="tab-row">
-      <button class="tab-btn aktif" onclick="girisSekme('giris')">Giriş Yap</button>
-      <button class="tab-btn" onclick="girisSekme('kayit')">Kayıt Ol</button>
-    </div>
-    <div id="s-giris" class="ic-sekme aktif">
-      <div class="form-grup"><label>E-posta</label><input type="email" id="email" maxlength="100" autocomplete="email"></div>
-      <div class="form-grup"><label>Şifre</label><input type="password" id="sifre" maxlength="100" autocomplete="current-password"></div>
-      <button class="btn btn-mavi" onclick="girisYap()">Giriş Yap</button>
-    </div>
-    <div id="s-kayit" class="ic-sekme">
-      <div class="form-grup"><label>Ad Soyad</label><input type="text" id="kayitAd" maxlength="60"></div>
-      <div class="form-grup"><label>E-posta</label><input type="email" id="kayitEmail" maxlength="100"></div>
-      <div class="form-grup"><label>Şifre</label><input type="password" id="kayitSifre" maxlength="100" placeholder="En az 6 karakter"></div>
-      <div class="form-grup"><label>Rolünüz</label>
-        <select id="kayitRol">
-          <option value="ogretmen">Sınıf / Branş Öğretmeni</option>
-          <option value="rehberlik">Rehberlik Uzmanı (PDR)</option>
-          <option value="mudur">Müdür / Okul İdaresi</option>
-        </select>
-      </div>
-      <button class="btn btn-mavi" onclick="kayitOl()">Hesap Oluştur</button>
-    </div>
-  </div>
-</div>
-
-<!-- ONAY BEKLİYOR -->
-<div id="onayEkrani" class="onay-bekliyor-ekran" style="display:none">
-  <div style="font-size:48px;margin-bottom:16px">⏳</div>
-  <div style="color:white;font-size:20px;font-weight:800;margin-bottom:8px">Hesabınız Onay Bekliyor</div>
-  <div style="color:rgba(255,255,255,.85);font-size:14px;max-width:320px;line-height:1.6" id="onayMesaj">Kaydınız alındı. Yönetici onayından sonra sisteme erişebileceksiniz.</div>
-  <button class="btn btn-beyaz" style="max-width:200px;margin-top:24px" onclick="cikisYap()">Çıkış Yap</button>
-</div>
-
-<!-- ANA UYGULAMA -->
-<div id="anaUygulama" style="display:none">
-  <div class="navbar">
-    <div class="navbar-left">
-      <div>
-        <div class="navbar-title">🏫 Risk Değerlendirme</div>
-        <div class="navbar-sub" id="navRol">—</div>
-      </div>
-      <span class="admin-rozet" id="adminRozet" style="display:none">ADMİN</span>
-    </div>
-    <button class="cikis-btn" onclick="cikisYap()">Çıkış</button>
-  </div>
-
-  <!-- ANASAYFA -->
-  <div id="ekran-anasayfa" class="ekran aktif">
-    <div class="metrik-grid">
-      <div class="metrik-kart m-mavi"><div class="metrik-sayi" id="m-toplam">—</div><div class="metrik-etiket">Toplam öğrenci</div></div>
-      <div class="metrik-kart m-kirmizi"><div class="metrik-sayi" id="m-kritik">—</div><div class="metrik-etiket">Kritik risk</div></div>
-      <div class="metrik-kart m-turuncu"><div class="metrik-sayi" id="m-yuksek">—</div><div class="metrik-etiket">Yüksek risk</div></div>
-      <div class="metrik-kart m-yesil"><div class="metrik-sayi" id="m-bugun">—</div><div class="metrik-etiket">Bugün değerlendirilen</div></div>
-    </div>
-    <div id="onayBekleyenBanner"></div>
-    <div id="kritikBanner"></div>
-    <!-- Kullanıcı Filtresi — açılır menü -->
-    <div class="kart" style="padding:12px 14px;margin-bottom:14px">
-      <div style="font-size:11px;font-weight:700;color:var(--yazi2);margin-bottom:6px">👤 KULLANICI FİLTRESİ</div>
-      <select id="kullaniciFiltreSel" onchange="kullaniciSeldegisti()" style="width:100%">
-        <option value="">— Tümünü göster —</option>
-      </select>
-    </div>
-    <div class="kart">
-      <div class="kart-baslik"><span class="kart-baslik-sol">⚠️ Acil Takip Listesi</span></div>
-      <div id="acilListe"><div class="yukleniyor">Yükleniyor...</div></div>
-    </div>
-    <div class="kart">
-      <div class="kart-baslik"><span class="kart-baslik-sol">📊 Risk Dağılımı</span></div>
-      <div class="grafik-alan"><canvas id="dagilimGrafik"></canvas></div>
-    </div>
-  </div>
-
-  <!-- ÖĞRENCİLER -->
-  <div id="ekran-ogrenciler" class="ekran">
-    <!-- Butonlar en üstte -->
-    <div class="btn-satir" style="margin-bottom:12px">
-      <button class="btn btn-mavi" onclick="ogrenciEkleAc()">+ Yeni Öğrenci</button>
-      <button class="btn btn-yesil" onclick="topluYazdirAc()">🖨 Toplu Yazdır</button>
-    </div>
-    <div class="kart" style="margin-bottom:10px;padding:12px 14px">
-      <div class="arama-row">
-        <input type="text" id="aramaInput" placeholder="🔍  Öğrenci ara..." maxlength="60" oninput="ogrencileriRenderEt()">
-        <select id="filtreSeviye" onchange="ogrencileriRenderEt()">
-          <option value="">Tüm riskler</option>
-          <option value="KRİTİK">Kritik</option>
-          <option value="YÜKSEK">Yüksek</option>
-          <option value="ORTA">Orta</option>
-          <option value="DÜŞÜK">Düşük</option>
-        </select>
-      </div>
-      <div style="font-size:11px;font-weight:700;color:var(--yazi2);margin-bottom:6px">SINIF FİLTRESİ</div>
-      <select id="sinifFiltreSel" onchange="sinifSeldegisti()" style="width:100%">
-        <option value="">— Tüm sınıfları göster —</option>
-      </select>
-    </div>
-    <div id="ogrenciListesiWrap"><div class="yukleniyor">Yükleniyor...</div></div>
-  </div>
-
-  <!-- FORM -->
-  <div id="ekran-form" class="ekran">
-    <div class="kart">
-      <div class="kart-baslik"><span class="kart-baslik-sol">📋 Risk Değerlendirme Formu</span></div>
-      <div class="bilgi-banner">ℹ️ Bu form bir tanı aracı değildir. Gözlemler, riskleri somutlaştırmak ve üzerinde çalışmak içindir.</div>
-      <div class="form-grup">
-        <label>Sınıf seç</label>
-        <select id="formSinif" onchange="formSinifDegisti()"><option value="">— Önce sınıf seçin —</option></select>
-      </div>
-      <div class="form-grup">
-        <label>Öğrenci seç</label>
-        <select id="formOgrenci" onchange="formOgrenciDegisti()"><option value="">— Öğrenci seçin —</option></select>
-      </div>
-      <div class="form-grup">
-        <label>Değerlendiren</label>
-        <input type="text" id="formDegerlendiren" readonly style="background:var(--gri2)">
-      </div>
-    </div>
-    <div class="kart"><div class="bolum-baslik b-mavi">1. Davranışsal ve Sosyal Göstergeler</div><div id="bolum1"></div></div>
-    <div class="kart"><div class="bolum-baslik b-mor">2. İdeolojik, Dijital Sızıntı ve Kimlik Faktörleri</div><div id="bolum2"></div></div>
-    <div class="kart"><div class="bolum-baslik b-turuncu">3. Aile ve Çevresel Faktörler</div><div id="bolum3"></div></div>
-    <div class="kart"><div class="bolum-baslik b-kirmizi">4. Risk Seviyesi ve Eylem Planı</div><div id="bolum4"></div></div>
-    <div class="kart">
-      <div class="bolum-baslik b-yesil">5. Koruyucu Faktörler — "Var" seçimi riski AZALTIR ✓</div>
-      <div id="bolum5"></div>
-    </div>
-    <div class="kart">
-      <div class="kart-baslik"><span class="kart-baslik-sol">📊 Hesaplanan Risk Skoru</span></div>
-      <div class="puan-onizleme">
-        <div>
-          <div style="font-size:12px;color:var(--yazi2);margin-bottom:2px">Toplam puan</div>
-          <span class="puan-onizleme-sayi" id="onizlemePuan">0</span>
-          <span style="font-size:12px;color:var(--yazi2);margin-left:4px">/ 100</span>
-        </div>
-        <span class="rozet r-dusuk" id="onizlemeRozet">DÜŞÜK</span>
-      </div>
-      <div id="puanDetay" style="font-size:12px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
-      <div class="form-grup">
-        <label>Değerlendirme sonucu / Önerilen müdahale</label>
-        <textarea id="formSonuc" maxlength="1000"></textarea>
-      </div>
-      <button class="btn btn-mavi" onclick="formuKaydet()">✓ Değerlendirmeyi Kaydet</button>
-      <button class="btn btn-beyaz" onclick="formuSifirla()">Formu Temizle</button>
-    </div>
-  </div>
-
-  <!-- MÜDAHALE -->
-  <div id="ekran-mudahale" class="ekran">
-    <div class="kart">
-      <div class="kart-baslik"><span class="kart-baslik-sol">🛡️ Müdahale Kaydı</span></div>
-      <div class="form-grup"><label>Öğrenci</label><select id="mudahaleOgrenci"><option value="">— Öğrenci seçin —</option></select></div>
-      <div class="form-grup"><label>Yapılan işlem</label>
-        <select id="mudahaleIslem">
-          <option value="Sadece izlemeye alındı">Sadece izleme</option>
-          <option value="Rehberlik görüşmesi yapıldı">Rehberlik görüşmesi</option>
-          <option value="Veli çağrıldı ve bilgilendirildi">Veli çağrıldı</option>
-          <option value="Psikolojik takibe alındı">Psikolojik takip</option>
-          <option value="Sınıf öğretmeniyle koordinasyon sağlandı">Öğretmen koordinasyonu</option>
-          <option value="Dış kuruma (RAM/hastane) yönlendirme yapıldı">Dış kuruma yönlendirme</option>
-          <option value="Anında kriz müdahalesi yapıldı">Anında kriz müdahalesi</option>
-          <option value="Mülki amir / emniyet bilgilendirildi">Mülki amir / emniyet bilgilendirildi</option>
-        </select>
-      </div>
-      <div class="form-grup"><label>Sorumlu kişi</label><input type="text" id="mudahaleSorumlu" maxlength="60"></div>
-      <div class="form-grup"><label>Takip tarihi</label><input type="text" id="mudahaleTakip" maxlength="40"></div>
-      <div class="form-grup"><label>Not</label><textarea id="mudahaleNot" maxlength="500"></textarea></div>
-      <button class="btn btn-mavi" onclick="mudahaleKaydet()">✓ Müdahaleyi Kaydet</button>
-    </div>
-    <div class="kart">
-      <div class="kart-baslik"><span class="kart-baslik-sol">📋 Müdahale Geçmişi</span></div>
-      <div style="display:flex;gap:8px;margin-bottom:12px">
-        <select id="mudGecmisSinif" onchange="mudGecmisSinifDegisti()" style="flex:1">
-          <option value="">— Sınıf seçin —</option>
-        </select>
-        <select id="mudGecmisOgrenci" onchange="mudahaleGecmisiniRenderEt()" style="flex:1">
-          <option value="">— Öğrenci seçin —</option>
-        </select>
-      </div>
-      <div id="mudahaleGecmisi"><div style="color:var(--yazi2);font-size:13px;padding:8px 0">Sınıf veya öğrenci seçin.</div></div>
-    </div>
-  </div>
-
-  <!-- YÖNETİM PANELİ -->
-  <div id="ekran-yonetim" class="ekran">
-    <!-- Onay Bekleyenler -->
-    <div class="kart">
-      <div class="kart-baslik"><span class="kart-baslik-sol">⏳ Onay Bekleyen Hesaplar</span></div>
-      <div id="onayListesi"><div class="yukleniyor">Yükleniyor...</div></div>
-    </div>
-    <!-- Kullanıcı Yönetimi -->
-    <div class="kart">
-      <div class="kart-baslik"><span class="kart-baslik-sol">👥 Kullanıcı Yönetimi</span></div>
-      <div id="kullaniciYonetimListesi"><div class="yukleniyor">Yükleniyor...</div></div>
-    </div>
-    <!-- Toplu Sınıf Güncelleme -->
-    <div class="kart">
-      <div class="kart-baslik"><span class="kart-baslik-sol">🏫 Toplu Sınıf Güncelleme</span></div>
-      <div class="bilgi-banner">Bir sınıfın tüm öğrencilerini yeni bir sınıfa taşımak için kullanın. (örn: 9-A → 10-A)</div>
-      <div class="form-grup"><label>Mevcut Sınıf Adı</label>
-        <select id="eskiSinifSec"><option value="">— Seçin —</option></select>
-      </div>
-      <div class="form-grup"><label>Yeni Sınıf Adı</label>
-        <input type="text" id="yeniSinifAdi" maxlength="20" placeholder="10-A">
-      </div>
-      <button class="btn btn-mavi" onclick="topluSinifGuncelle()">Tüm Sınıfı Güncelle</button>
-    </div>
-  </div>
-</div><!-- /anaUygulama -->
-
-<!-- ALT MENÜ -->
-<div class="bottom-nav" id="altMenu" style="display:none">
-  <button class="bnav-btn aktif" id="bn-anasayfa" onclick="ekranGoster('anasayfa')"><span class="ikon">🏠</span>Anasayfa</button>
-  <button class="bnav-btn" id="bn-ogrenciler" onclick="ekranGoster('ogrenciler')"><span class="ikon">👥</span>Öğrenciler</button>
-  <button class="bnav-btn" id="bn-form" onclick="ekranGoster('form')"><span class="ikon">📋</span>Form Doldur</button>
-  <button class="bnav-btn" id="bn-mudahale" onclick="ekranGoster('mudahale')"><span class="ikon">🛡️</span>Müdahale</button>
-  <button class="bnav-btn" id="bn-yonetim" onclick="ekranGoster('yonetim')" style="display:none"><span class="ikon">⚙️</span>Yönetim</button>
-</div>
-
-<!-- DETAY MODAL -->
-<div class="overlay" id="detayOverlay">
-  <div class="modal">
-    <div class="modal-baslik"><span id="detayBaslik">Öğrenci Detayı</span><button class="kapat-btn" onclick="modalKapat('detayOverlay')">✕</button></div>
-    <div class="modal-icerik">
-      <div id="detayIcerik"></div>
-      <div class="kart-baslik" style="margin-top:14px"><span class="kart-baslik-sol">📈 Risk Grafiği</span></div>
-      <div class="grafik-alan"><canvas id="riskGrafik"></canvas></div>
-      <div id="kritikYukselisUyari"></div>
-      <div class="kart-baslik" style="margin-top:14px"><span class="kart-baslik-sol">📝 Değerlendirme Geçmişi</span></div>
-      <div id="detayGozlemler"></div>
-      <div class="btn-satir" style="margin-top:12px">
-        <button class="btn btn-mavi" onclick="mudahaleEkleDetay()">+ Müdahale Ekle</button>
-        <button class="btn btn-yesil" onclick="tekliYazdirDetay()">🖨 Yazdır</button>
-      </div>
-      <button class="btn btn-beyaz" onclick="modalKapat('detayOverlay')">Kapat</button>
-    </div>
-  </div>
-</div>
-
-<!-- EKLE MODAL -->
-<div class="overlay" id="ekleOverlay">
-  <div class="modal">
-    <div class="modal-baslik"><span>Yeni Öğrenci Ekle</span><button class="kapat-btn" onclick="modalKapat('ekleOverlay')">✕</button></div>
-    <div class="modal-icerik">
-      <div class="form-grup"><label>Okul No</label><input type="text" id="yeniOkulNo" maxlength="20"></div>
-      <div class="form-grup"><label>Ad Soyad</label><input type="text" id="yeniAd" maxlength="60"></div>
-      <div class="form-grup"><label>Sınıf</label><input type="text" id="yeniSinif" maxlength="20"></div>
-      <div class="form-grup"><label>Devamsızlık (gün)</label><input type="text" id="yeniDevamsizlik" maxlength="6" placeholder="0"></div>
-      <div class="form-grup"><label>Veli Adı</label><input type="text" id="yeniVeli" maxlength="60"></div>
-      <div class="form-grup"><label>Veli Telefonu</label><input type="text" id="yeniTelefon" maxlength="20"></div>
-      <button class="btn btn-mavi" onclick="ogrenciEkle()">Ekle</button>
-      <button class="btn btn-beyaz" onclick="modalKapat('ekleOverlay')">İptal</button>
-    </div>
-  </div>
-</div>
-
-<!-- DÜZENLE MODAL -->
-<div class="overlay" id="duzenleOverlay">
-  <div class="modal">
-    <div class="modal-baslik"><span>✏️ Öğrenci Düzenle</span><button class="kapat-btn" onclick="modalKapat('duzenleOverlay')">✕</button></div>
-    <div class="modal-icerik">
-      <div class="form-grup"><label>Okul No</label><input type="text" id="duzOkulNo" maxlength="20"></div>
-      <div class="form-grup"><label>Ad Soyad</label><input type="text" id="duzAd" maxlength="60"></div>
-      <div class="form-grup"><label>Sınıf</label><input type="text" id="duzSinif" maxlength="20"></div>
-      <div class="form-grup"><label>Devamsızlık (gün)</label><input type="text" id="duzDevamsizlik" maxlength="6"></div>
-      <div class="form-grup"><label>Veli Adı</label><input type="text" id="duzVeli" maxlength="60"></div>
-      <div class="form-grup"><label>Veli Telefonu</label><input type="text" id="duzTelefon" maxlength="20"></div>
-      <button class="btn btn-mavi" onclick="ogrenciDuzenleKaydet()">✓ Kaydet</button>
-      <button class="btn btn-beyaz" onclick="modalKapat('duzenleOverlay')">İptal</button>
-    </div>
-  </div>
-</div>
-
-<!-- KULLANICI DÜZENLE MODAL -->
-<div class="overlay" id="kullaniciDuzenleOverlay">
-  <div class="modal">
-    <div class="modal-baslik"><span>✏️ Kullanıcı Düzenle</span><button class="kapat-btn" onclick="modalKapat('kullaniciDuzenleOverlay')">✕</button></div>
-    <div class="modal-icerik">
-      <div class="form-grup"><label>Ad Soyad</label><input type="text" id="kdAd" maxlength="60"></div>
-      <div class="form-grup"><label>Rol</label>
-        <select id="kdRol">
-          <option value="ogretmen">Öğretmen</option>
-          <option value="rehberlik">Rehberlik Uzmanı (PDR)</option>
-          <option value="mudur">Müdür / İdare</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
-      <button class="btn btn-mavi" onclick="kullaniciDuzenleKaydet()">✓ Kaydet</button>
-      <button class="btn btn-beyaz" onclick="modalKapat('kullaniciDuzenleOverlay')">İptal</button>
-    </div>
-  </div>
-</div>
-
-<!-- YAZDIR MODAL -->
-<div class="overlay" id="yazdirOverlay">
-  <div class="modal">
-    <div class="modal-baslik"><span id="yazdirBaslik">🖨 Yazdır</span><button class="kapat-btn" onclick="modalKapat('yazdirOverlay')">✕</button></div>
-    <div class="modal-icerik">
-      <div class="bilgi-banner">ℹ️ Yazdır butonuna basıldığında yeni bir pencere açılır. Yazıcı seçim ekranında "Üst bilgi ve alt bilgileri yazdır" seçeneğini kapatın. Farklı Kaydet → PDF ile PDF olarak da kaydedebilirsiniz.</div>
-      <div id="yazdirOnizleme" class="yazdir-onizleme"></div>
-      <div class="btn-satir">
-        <button class="btn btn-yesil" onclick="yazdirBaslat()">🖨 Yazdır / PDF Kaydet</button>
-        <button class="btn btn-beyaz" onclick="modalKapat('yazdirOverlay')">İptal</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
-<script>
-// ════════════════════════════════════════════
-// GÜVENLİK YARDIMCILARI
-// ════════════════════════════════════════════
-function xss(str){
-  if(!str) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
-}
-// Giriş denemesi sınırlayıcı
-let _loginDeneme=0, _loginBlok=0;
-function rateLimitGiris(){
-  if(Date.now()<_loginBlok){ toast('Çok fazla deneme. '+(Math.ceil((_loginBlok-Date.now())/1000))+'s bekleyin.'); return false; }
-  return true;
-}
-function rateLimitArtir(){
-  _loginDeneme++;
-  if(_loginDeneme>=5){ _loginBlok=Date.now()+30000; _loginDeneme=0; }
-}
-
-// ════════════════════════════════════════════
-// FİREBASE
-// ════════════════════════════════════════════
-const firebaseConfig={
-  apiKey:"AIzaSyDC0pchXZNp19fr1mB24UsafIOiSqoR-l0",
-  authDomain:"risk-analizi-mahirhan.firebaseapp.com",
-  projectId:"risk-analizi-mahirhan"
-};
-firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
-const auth=firebase.auth();
-
-const KOL={
-  ogrenciler:"ogrenciler",
-  degerlendirmeler:"degerlendirmeler",
-  mudahaleler:"mudahaleler",
-  kullanicilar:"kullanicilar"
-};
-const ADMIN_EMAIL="fizikcimhr@gmail.com";
-
-// ════════════════════════════════════════════
-// KRİTERLER — 5 BÖLÜM
-// ════════════════════════════════════════════
-const KRITERLER={
-  bolum1:{baslik:"Davranışsal ve Sosyal Göstergeler",tipi:"risk",kriterler:[
-    {id:"b1k1",metin:"Ani öfke patlamaları veya kontrolsüz saldırganlık sergiliyor mu?",agirlik:8},
-    {id:"b1k2",metin:"Akranları tarafından dışlanma veya yoğun zorbalığa maruz kalıyor mu?",agirlik:6},
-    {id:"b1k3",metin:"Aşırı içe kapanıklık ve sosyal izolasyon belirtileri var mı?",agirlik:6},
-    {id:"b1k4",metin:"Okul disiplin geçmişinde şiddet içerikli olaylar mevcut mu?",agirlik:7},
-    {id:"b1k5",metin:"Derslerde ani akademik düşüş yaşıyor mu?",agirlik:5},
-    {id:"b1k6",metin:"Olaylardan sonra aşırı sessizleşiyor ya da konuyu sürekli dillendiriyor mu?",agirlik:5},
-  ]},
-  bolum2:{baslik:"İdeolojik, Dijital Sızıntı ve Kimlik Faktörleri",tipi:"risk",kriterler:[
-    {id:"b2k1",metin:"Sosyal medyada şiddet, silah veya baskın içerikli paylaşımlar yapıyor mu?",agirlik:10},
-    {id:"b2k2",metin:"Geçmişteki okul saldırganlarına veya şiddet figürlerine hayranlık duyuyor mu?",agirlik:10},
-    {id:"b2k3",metin:"Çizimlerinde, yazılarında veya ödevlerinde yoğun ölüm/intikam temaları var mı?",agirlik:8},
-    {id:"b2k4",metin:"Ateşli silahlara veya patlayıcılara karşı olağanüstü ilgi gösteriyor mu?",agirlik:9},
-    {id:"b2k5",metin:"İnternet ortamında şiddet içerikli içeriklere aşırı maruz kalıyor mu?",agirlik:4},
-    {id:"b2k6",metin:"Zararlı alışkanlıkları (madde kullanımı vb.) olabileceği düşünülüyor mu?",agirlik:7},
-    {id:"b2k7",metin:"Kimliği, kültürel arka planı veya kişisel özellikleri nedeniyle akranları tarafından ötekileştirildiğine dair gözlem var mı?",agirlik:7},
-    {id:"b2k8",metin:"Belirli bir inanç, köken veya bireysel özelliği nedeniyle dışlanma ya da ayrımcılığa maruz kaldığına dair belirti var mı?",agirlik:7},
-    {id:"b2k9",metin:"Aidiyet duygusu zayıf; kendini 'yabancı' ya da 'öteki' olarak hissediyor gibi görünüyor mu?",agirlik:5},
-  ]},
-  bolum3:{baslik:"Aile ve Çevresel Faktörler",tipi:"risk",kriterler:[
-    {id:"b3k1",metin:"Aile içinde şiddet veya ağır ihmal geçmişi biliniyor mu?",agirlik:8},
-    {id:"b3k2",metin:"Ev ortamında denetimsiz silah erişimi ihtimali var mı?",agirlik:10},
-    {id:"b3k3",metin:"Yakın zamanda yaşanan ağır kayıp, ayrılık veya travma mevcut mu?",agirlik:7},
-    {id:"b3k4",metin:"Aile içinde madde kullanımı olabileceği düşünülüyor mu?",agirlik:6},
-  ]},
-  bolum4:{baslik:"Risk Seviyesi ve Eylem Planı",tipi:"risk",kriterler:[
-    {id:"b4k1",metin:"Okuldan olumsuz ayrılan ve sosyal medya / çevresi aracılığıyla okula zarar verme riski taşıyan bireylerle bağlantısı var mı?",agirlik:10},
-  ]},
-  bolum5:{baslik:"Koruyucu Faktörler",tipi:"koruyucu",kriterler:[
-    {id:"b5k1",metin:"Güçlü ve sağlıklı arkadaşlık ilişkileri var mı?",agirlik:5},
-    {id:"b5k2",metin:"Okul etkinliklerine veya kulüplere aktif olarak katılıyor mu?",agirlik:4},
-    {id:"b5k3",metin:"Güvendiği ve rahatlıkla konuşabildiği bir yetişkin (öğretmen, aile üyesi) var mı?",agirlik:6},
-    {id:"b5k4",metin:"Akademik açıdan istikrarlı veya gelişme gösteriyor mu?",agirlik:4},
-    {id:"b5k5",metin:"Duygularını sağlıklı biçimde ifade edebildiğine dair gözlemler var mı?",agirlik:5},
-    {id:"b5k6",metin:"Aile desteği güçlü; öğrenciyle düzenli ve olumlu iletişim kuruluyor mu?",agirlik:4},
-  ]}
-};
-// Risk puanı hesaplama için: pozitif ağırlıklar toplamı
-const MAKS_RISK_PUAN=Object.values(KRITERLER).filter(b=>b.tipi==='risk').flatMap(b=>b.kriterler).reduce((t,k)=>t+k.agirlik,0);
-const MAKS_KORUYUCU=Object.values(KRITERLER).filter(b=>b.tipi==='koruyucu').flatMap(b=>b.kriterler).reduce((t,k)=>t+k.agirlik,0);
-
-// ════════════════════════════════════════════
-// DURUM
-// ════════════════════════════════════════════
-let ogrenciler=[],degerlendirmeler=[],mudahaleler=[],kullanicilar=[];
-let mevcutKullanici=null,mevcutRol=null,mevcutAd=null,adminMi=false;
-let dagilimChart=null,riskChart=null;
-let secilenSinifFiltre='';    // '' = tümünü göster
-let secilenKullaniciFiltre=''; // '' = tümünü göster
-let detayAcikId=null,duzenleId=null,kdUid=null;
-
-// ════════════════════════════════════════════
-// YETKİ
-// ════════════════════════════════════════════
-function tamYetkiMi(){return adminMi||mevcutRol==='rehberlik'||mevcutRol==='mudur';}
-function mudahaleYetki(){return tamYetkiMi();}
-
-// ════════════════════════════════════════════
-// RİSK HESAPLAMA
-// ════════════════════════════════════════════
-function riskPuanHesapla(kriterSonuclari){
-  if(!kriterSonuclari) return 0;
-  let riskToplam=0,koruyucuToplam=0;
-  Object.values(KRITERLER).forEach(bolum=>{
-    bolum.kriterler.forEach(k=>{
-      const deger=kriterSonuclari[k.id]?.deger;
-      if(deger==='var'){
-        if(bolum.tipi==='koruyucu') koruyucuToplam+=k.agirlik;
-        else riskToplam+=k.agirlik;
-      }
-    });
-  });
-  const ham=(riskToplam/MAKS_RISK_PUAN)*100-(koruyucuToplam/MAKS_KORUYUCU)*28;
-  return Math.round(Math.max(0,Math.min(100,ham)));
-}
-function riskSeviyesi(p){if(p>=70)return"KRİTİK";if(p>=45)return"YÜKSEK";if(p>=20)return"ORTA";return"DÜŞÜK";}
-function rozetSinifi(s){return{KRİTİK:'r-kritik',YÜKSEK:'r-yuksek',ORTA:'r-orta',DÜŞÜK:'r-dusuk'}[s]||'r-dusuk';}
-function avatarRenk(s){return{KRİTİK:'#ffebee',YÜKSEK:'#fff3e0',ORTA:'#fff3e0',DÜŞÜK:'#e8f5e9'}[s]||'#e3f2fd';}
-function avatarYazi(s){return{KRİTİK:'#B71C1C',YÜKSEK:'#bf360c',ORTA:'#E65100',DÜŞÜK:'#2E7D32'}[s]||'#1565C0';}
-function a4Seviye(s){return{KRİTİK:'a4-seviye-kritik',YÜKSEK:'a4-seviye-yuksek',ORTA:'a4-seviye-orta',DÜŞÜK:'a4-seviye-dusuk'}[s]||'a4-seviye-dusuk';}
-
-function ogrenciSonPuani(id){
-  const devs=degerlendirmeler.filter(d=>d.ogrenciId===id);
-  if(!devs.length)return{puan:0,seviye:'DÜŞÜK',sayisi:0};
-  const son=devs[devs.length-1];
-  return{puan:son.puan||0,seviye:son.riskSeviyesi||'DÜŞÜK',sayisi:devs.length};
-}
-function trendHesapla(id){
-  const devs=degerlendirmeler.filter(d=>d.ogrenciId===id);
-  if(devs.length<3)return'sabit';
-  const pp=devs.slice(-4).map(d=>d.puan||0);
-  const n=pp.length;
-  const ilk=pp.slice(0,Math.floor(n/2)).reduce((a,b)=>a+b,0)/Math.ceil(n/2);
-  const son=pp.slice(Math.floor(n/2)).reduce((a,b)=>a+b,0)/Math.ceil(n/2);
-  if(son-ilk>10)return'yuksek';if(ilk-son>10)return'dusuk';return'sabit';
-}
-function trendIkon(t){
-  if(t==='yuksek')return'<span class="trend-yuksek">▲ Yükseliyor</span>';
-  if(t==='dusuk')return'<span class="trend-dusuk">▼ Düşüyor</span>';
-  return'<span class="trend-sabit">— Sabit</span>';
-}
-
-// Okul No önekli ad
-function ogrenciTamAdi(o){
-  if(!o)return'—';
-  return o.okulNo?xss(o.okulNo)+' — '+xss(o.ad):xss(o.ad);
-}
-
-// ════════════════════════════════════════════
-// FORM RENDER
-// ════════════════════════════════════════════
-function formuRenderEt(){
-  Object.entries(KRITERLER).forEach(([bid,bolum])=>{
-    const el=document.getElementById(bid);
-    if(!el)return;
-    el.innerHTML=bolum.kriterler.map(k=>{
-      const olumlu=bolum.tipi==='koruyucu';
-      return`<div class="kriter-satiri">
-        <div style="flex:1">
-          <div class="kriter-metin">${xss(k.metin)}</div>
-          <div style="font-size:11px;color:var(--yazi2);margin-top:1px">${olumlu?'✓ Koruyucu:':'Ağırlık:'} ${k.agirlik} puan</div>
-          <input type="text" class="not-input" id="not-${k.id}" placeholder="Gözlem notu (isteğe bağlı)" maxlength="200" style="display:none">
-        </div>
-        <div class="kriter-kontroller">
-          <button class="yok-btn" id="yok-${k.id}" onclick="kriterSec('${k.id}','yok')">Yok</button>
-          <button class="var-btn${olumlu?' olumlu':''}" id="var-${k.id}" onclick="kriterSec('${k.id}','var')">Var</button>
-        </div>
-      </div>`;
-    }).join('');
-  });
-}
-
-function kriterSec(id,deger){
-  document.getElementById('var-'+id)?.classList.toggle('aktif',deger==='var');
-  document.getElementById('yok-'+id)?.classList.toggle('aktif',deger==='yok');
-  const ni=document.getElementById('not-'+id);
-  if(ni)ni.style.display=deger==='var'?'block':'none';
-  onizlemeGuncelle();
-}
-function kriterDegeri(id){
-  if(document.getElementById('var-'+id)?.classList.contains('aktif'))return'var';
-  if(document.getElementById('yok-'+id)?.classList.contains('aktif'))return'yok';
-  return'';
-}
-
-function onizlemeGuncelle(){
-  let riskT=0,korT=0;
-  const katkilar=[];
-  Object.values(KRITERLER).forEach(bolum=>{
-    bolum.kriterler.forEach(k=>{
-      if(kriterDegeri(k.id)==='var'){
-        if(bolum.tipi==='koruyucu'){
-          korT+=k.agirlik;
-          katkilar.push(`<span style="background:var(--yesil-ac);color:var(--yesil);border-radius:4px;padding:2px 7px;font-size:11px">✓ ${xss(k.metin.substring(0,28))}… -${k.agirlik}</span>`);
-        }else{
-          riskT+=k.agirlik;
-          katkilar.push(`<span style="background:var(--kirmizi-ac);color:var(--kirmizi);border-radius:4px;padding:2px 7px;font-size:11px">${xss(k.metin.substring(0,28))}… +${k.agirlik}</span>`);
-        }
-      }
-    });
-  });
-  const ham=(riskT/MAKS_RISK_PUAN)*100-(korT/MAKS_KORUYUCU)*28;
-  const puan=Math.round(Math.max(0,Math.min(100,ham)));
-  const sv=riskSeviyesi(puan);
-  document.getElementById('onizlemePuan').textContent=puan;
-  const r=document.getElementById('onizlemeRozet');
-  r.textContent=sv;r.className='rozet '+rozetSinifi(sv);
-  document.getElementById('puanDetay').innerHTML=katkilar.join(' ');
-}
-
-// Madde 14: Öğrenci seçilince önceki değerlendirmeyi yükle
-function formOgrenciDegisti(){
-  const ogrenciId=document.getElementById('formOgrenci').value;
-  onizlemeGuncelle();
-  if(!ogrenciId){formuSifirla();return;}
-  const devs=degerlendirmeler.filter(d=>d.ogrenciId===ogrenciId);
-  if(!devs.length)return;
-  const son=devs[devs.length-1];
-  if(!son.kriterSonuclari)return;
-  // Formu sıfırla sonra doldur
-  Object.values(KRITERLER).flatMap(b=>b.kriterler).forEach(k=>{
-    document.getElementById('var-'+k.id)?.classList.remove('aktif');
-    document.getElementById('yok-'+k.id)?.classList.remove('aktif');
-    const ni=document.getElementById('not-'+k.id);
-    if(ni){ni.value='';ni.style.display='none';}
-  });
-  Object.entries(son.kriterSonuclari).forEach(([kId,val])=>{
-    if(val.deger==='var'||val.deger==='yok'){
-      document.getElementById('var-'+kId)?.classList.toggle('aktif',val.deger==='var');
-      document.getElementById('yok-'+kId)?.classList.toggle('aktif',val.deger==='yok');
-      const ni=document.getElementById('not-'+kId);
-      if(ni&&val.deger==='var'){ni.style.display='block';if(val.not)ni.value=val.not;}
-    }
-  });
-  if(son.sonuc)document.getElementById('formSonuc').value=son.sonuc;
-  onizlemeGuncelle();
-  toast('Önceki değerlendirme yüklendi');
-}
-
-function formuSifirla(){
-  Object.values(KRITERLER).flatMap(b=>b.kriterler).forEach(k=>{
-    document.getElementById('var-'+k.id)?.classList.remove('aktif');
-    document.getElementById('yok-'+k.id)?.classList.remove('aktif');
-    const ni=document.getElementById('not-'+k.id);
-    if(ni){ni.value='';ni.style.display='none';}
-  });
-  document.getElementById('formSonuc').value='';
-  document.getElementById('formOgrenci').value='';
-  onizlemeGuncelle();
-}
-
-function formuKaydet(){
-  const ogrenciId=document.getElementById('formOgrenci').value;
-  if(!ogrenciId){toast('Öğrenci seçin');return;}
-  const kriterSonuclari={};
-  let riskT=0,korT=0;
-  Object.values(KRITERLER).forEach(bolum=>{
-    bolum.kriterler.forEach(k=>{
-      const deger=kriterDegeri(k.id);
-      const not=document.getElementById('not-'+k.id)?.value||'';
-      kriterSonuclari[k.id]={deger,not};
-      if(deger==='var'){
-        if(bolum.tipi==='koruyucu')korT+=k.agirlik;else riskT+=k.agirlik;
-      }
-    });
-  });
-  const puan=Math.round(Math.max(0,Math.min(100,(riskT/MAKS_RISK_PUAN)*100-(korT/MAKS_KORUYUCU)*28)));
-  const sonuc=document.getElementById('formSonuc').value.trim();
-  db.collection(KOL.degerlendirmeler).add({
-    ogrenciId,kriterSonuclari,puan,
-    riskSeviyesi:riskSeviyesi(puan),sonuc,
-    degerlendiren:mevcutAd||mevcutKullanici?.email,
-    degerlendirenUid:mevcutKullanici?.uid,
-    degerlendirenRol:mevcutRol,
-    olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
-  }).then(()=>{toast('✓ Değerlendirme kaydedildi — Puan: '+puan);formuSifirla();})
-    .catch(e=>toast('Hata: '+xss(e.message)));
-}
-
-// ════════════════════════════════════════════
-// ANASAYFA
-// ════════════════════════════════════════════
-function anasayfaRenderEt(){
-  // Kullanıcı filtresi: seçili uid varsa sadece o kullanıcının öğrencileri
-  let filtreliOgr=ogrenciler;
-  if(secilenKullaniciFiltre){
-    const gosterilecekIds=new Set();
-    degerlendirmeler.forEach(d=>{if(d.degerlendirenUid===secilenKullaniciFiltre)gosterilecekIds.add(d.ogrenciId);});
-    ogrenciler.forEach(o=>{if(o.ekleyenUid===secilenKullaniciFiltre)gosterilecekIds.add(o.id);});
-    filtreliOgr=ogrenciler.filter(o=>gosterilecekIds.has(o.id));
-  }
-  const puanli=filtreliOgr.map(o=>{
-    const son=ogrenciSonPuani(o.id);
-    return{...o,...son,trend:trendHesapla(o.id)};
-  });
-  document.getElementById('m-toplam').textContent=filtreliOgr.length;
-  document.getElementById('m-kritik').textContent=puanli.filter(o=>o.seviye==='KRİTİK').length;
-  document.getElementById('m-yuksek').textContent=puanli.filter(o=>o.seviye==='YÜKSEK').length;
-  const bugun=new Date().toLocaleDateString('tr-TR');
-  document.getElementById('m-bugun').textContent=degerlendirmeler.filter(d=>{
-    if(!d.olusturuldu)return false;
-    const t=d.olusturuldu.toDate?d.olusturuldu.toDate():new Date(d.olusturuldu);
-    return t.toLocaleDateString('tr-TR')===bugun;
-  }).length;
-
-  // Onay bekleyen banner
-  const bekleyenler=kullanicilar.filter(k=>!k.onaylandi);
-  const onayBannerEl=document.getElementById('onayBekleyenBanner');
-  if(tamYetkiMi()&&bekleyenler.length){
-    onayBannerEl.innerHTML=`<div class="onay-banner">⏳ ${bekleyenler.length} yeni hesap onay bekliyor<button class="btn btn-kucuk btn-mavi" style="margin:0;padding:5px 12px" onclick="ekranGoster('yonetim')">İncele</button></div>`;
-  }else{onayBannerEl.innerHTML='';}
-
-  const kritikler=puanli.filter(o=>o.seviye==='KRİTİK');
-  document.getElementById('kritikBanner').innerHTML=kritikler.length
-    ?`<div class="uyari-banner">⚠️ <span>${kritikler.length} KRİTİK riskli öğrenci: <b>${kritikler.map(o=>xss(o.ad)).join(', ')}</b> — ivedilikle müdahale!</span></div>`:'' ;
-
-  const acil=puanli.filter(o=>o.seviye!=='DÜŞÜK').sort((a,b)=>b.puan-a.puan).slice(0,8);
-  document.getElementById('acilListe').innerHTML=acil.length
-    ?acil.map(o=>`<div class="ogrenci-satir" style="cursor:pointer" onclick="ogrenciDetay('${o.id}')">
-        <div class="avatar" style="background:${avatarRenk(o.seviye)};color:${avatarYazi(o.seviye)}">${xss(o.ad.charAt(0))}</div>
-        <div class="ogrenci-bilgi"><div class="ogrenci-ad">${ogrenciTamAdi(o)}</div><div class="ogrenci-alt">${xss(o.sinif||'—')} · ${trendIkon(o.trend)}</div></div>
-        <div class="puan-col"><div class="puan-sayi" style="color:${avatarYazi(o.seviye)}">${o.puan}</div><span class="rozet ${rozetSinifi(o.seviye)}">${o.seviye}</span></div>
-      </div>`).join('')
-    :'<div style="text-align:center;padding:16px;color:var(--yazi2);font-size:13px">Risk taşıyan öğrenci bulunmuyor</div>';
-
-  const d={kritik:puanli.filter(o=>o.seviye==='KRİTİK').length,yuksek:puanli.filter(o=>o.seviye==='YÜKSEK').length,orta:puanli.filter(o=>o.seviye==='ORTA').length,dusuk:puanli.filter(o=>o.seviye==='DÜŞÜK').length};
-  const ctx=document.getElementById('dagilimGrafik');
-  if(dagilimChart)dagilimChart.destroy();
-  dagilimChart=new Chart(ctx,{type:'doughnut',data:{labels:['Kritik','Yüksek','Orta','Düşük'],datasets:[{data:[d.kritik,d.yuksek,d.orta,d.dusuk],backgroundColor:['#B71C1C','#bf360c','#E65100','#2E7D32'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},padding:10}}}}});
-}
-
-// ════════════════════════════════════════════
-// KULLANICI FİLTRE SELECT (Anasayfa)
-// ════════════════════════════════════════════
-function kullaniciCbGuncelle(){
-  const sel=document.getElementById('kullaniciFiltreSel');
-  if(!sel)return;
-  const aktifKullanicilar=kullanicilar
-    .filter(k=>k.onaylandi!==false)
-    .sort((a,b)=>(a.ad||'').localeCompare(b.ad||'','tr'));
-  sel.innerHTML='<option value="">— Tümünü göster —</option>'+
-    aktifKullanicilar.map(k=>`<option value="${k.id}">${xss(k.ad||k.email)}</option>`).join('');
-  // Seçili değer varsa koru
-  if(secilenKullaniciFiltre) sel.value=secilenKullaniciFiltre;
-}
-function kullaniciSeldegisti(){
-  secilenKullaniciFiltre=document.getElementById('kullaniciFiltreSel').value;
-  anasayfaRenderEt();
-}
-
-// ════════════════════════════════════════════
-// SINIF FİLTRE SELECT
-// ════════════════════════════════════════════
-function sinifCbGuncelle(){
-  const siniflar=[...new Set(ogrenciler.map(o=>o.sinif||'Sınıf Girilmemiş'))].sort((a,b)=>a.localeCompare(b,'tr'));
-  const ogrSel=document.getElementById('sinifFiltreSel');
-  if(ogrSel){
-    ogrSel.innerHTML='<option value="">— Tüm sınıfları göster —</option>'+
-      siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
-    if(secilenSinifFiltre) ogrSel.value=secilenSinifFiltre;
-  }
-  // Toplu sınıf güncelleme select (Yönetim paneli)
-  const sel=document.getElementById('eskiSinifSec');
-  if(sel) sel.innerHTML='<option value="">— Seçin —</option>'+siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
-  // Form - sınıf seç
-  const formSel=document.getElementById('formSinif');
-  if(formSel){
-    const eski=formSel.value;
-    formSel.innerHTML='<option value="">— Önce sınıf seçin —</option>'+siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
-    if(eski) formSel.value=eski;
-  }
-  // Müdahale geçmiş sınıf filtresi
-  const mudSel=document.getElementById('mudGecmisSinif');
-  if(mudSel){
-    const eski2=mudSel.value;
-    mudSel.innerHTML='<option value="">— Sınıf seçin —</option>'+siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
-    if(eski2) mudSel.value=eski2;
-  }
-}
-function sinifSeldegisti(){
-  secilenSinifFiltre=document.getElementById('sinifFiltreSel').value;
-  ogrencileriRenderEt();
-}
-// Form sınıf değişince öğrenci listesini filtrele
-function formSinifDegisti(){
-  const sinif=document.getElementById('formSinif').value;
-  const sel=document.getElementById('formOgrenci');
-  sel.innerHTML='<option value="">— Öğrenci seçin —</option>';
-  if(!sinif){sel.innerHTML='<option value="">— Önce sınıf seçin —</option>';return;}
-  const filtreliOgr=ogrenciler.filter(o=>(o.sinif||'Sınıf Girilmemiş')===sinif)
-    .sort((a,b)=>{const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;return na!==nb?na-nb:(a.ad||'').localeCompare(b.ad||'','tr');});
-  sel.innerHTML='<option value="">— Öğrenci seçin —</option>'+
-    filtreliOgr.map(o=>`<option value="${o.id}">${o.okulNo?'['+xss(o.okulNo)+'] ':''} ${xss(o.ad)}</option>`).join('');
-  // Formu sıfırla
-  formuSifirla();
-}
-// Müdahale geçmiş sınıf değişince öğrenci select'i güncelle
-function mudGecmisSinifDegisti(){
-  const sinif=document.getElementById('mudGecmisSinif').value;
-  const sel=document.getElementById('mudGecmisOgrenci');
-  sel.innerHTML='<option value="">— Öğrenci seçin —</option>';
-  if(!sinif){mudahaleGecmisiniRenderEt();return;}
-  const filtreliOgr=ogrenciler.filter(o=>(o.sinif||'Sınıf Girilmemiş')===sinif)
-    .sort((a,b)=>{const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;return na!==nb?na-nb:(a.ad||'').localeCompare(b.ad||'','tr');});
-  sel.innerHTML='<option value="">— Tüm sınıf —</option>'+
-    filtreliOgr.map(o=>`<option value="${o.id}">${o.okulNo?'['+xss(o.okulNo)+'] ':''} ${xss(o.ad)}</option>`).join('');
-  mudahaleGecmisiniRenderEt();
-}
-
-// ════════════════════════════════════════════
-// ÖĞRENCİ LİSTESİ
-// ════════════════════════════════════════════
-function ogrencileriRenderEt(){
-  const arama=(document.getElementById('aramaInput')?.value||'').toLowerCase();
-  const filtre=document.getElementById('filtreSeviye')?.value||'';
-  const sinifFiltre=document.getElementById('sinifFiltreSel')?.value||secilenSinifFiltre;
-  const puanli=ogrenciler.map(o=>{
-    const son=ogrenciSonPuani(o.id);
-    return{...o,...son,trend:trendHesapla(o.id)};
-  }).filter(o=>{
-    if(arama&&!((o.ad||'').toLowerCase().includes(arama)||(o.okulNo||'').includes(arama)))return false;
-    if(filtre&&o.seviye!==filtre)return false;
-    if(sinifFiltre){
-      const s=o.sinif||'Sınıf Girilmemiş';
-      if(s!==sinifFiltre)return false;
-    }
-    return true;
-  }).sort((a,b)=>{
-    const sa=a.sinif||'zzz';const sb=b.sinif||'zzz';
-    if(sa!==sb)return sa.localeCompare(sb,'tr');
-    const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;
-    if(na!==nb)return na-nb;
-    return(a.ad||'').localeCompare(b.ad||'','tr');
-  });
-
-  const wrap=document.getElementById('ogrenciListesiWrap');
-  if(!puanli.length){
-    wrap.innerHTML='<div class="kart" style="text-align:center;padding:20px;color:var(--yazi2);font-size:13px">Öğrenci bulunamadı</div>';
-    return;
-  }
-
-  const siniflar={};
-  puanli.forEach(o=>{const s=o.sinif||'Sınıf Girilmemiş';if(!siniflar[s])siniflar[s]=[];siniflar[s].push(o);});
-
-  wrap.innerHTML=Object.entries(siniflar).map(([sinifAdi,grup])=>{
-    const kritikS=grup.filter(o=>o.seviye==='KRİTİK').length;
-    const sinifRenk=kritikS>0?'var(--kirmizi-ac)':grup.some(o=>o.seviye==='YÜKSEK')?'var(--sari-ac)':'var(--mavi-cok-ac)';
-    return`<div class="sinif-grup">
-      <div class="sinif-baslik" style="background:${sinifRenk}">
-        <span style="font-weight:800">${xss(sinifAdi)}</span>
-        <span style="font-size:12px;opacity:.75">${grup.length} öğrenci${kritikS>0?' · ⚠️ '+kritikS+' kritik':''}</span>
-      </div>
-      <div class="kart" style="margin-bottom:0;padding:4px 12px;border-radius:0 0 var(--radius) var(--radius)">
-        ${grup.map(o=>`
-        <div class="ogrenci-satir">
-          <div class="avatar" style="background:${avatarRenk(o.seviye)};color:${avatarYazi(o.seviye)};cursor:pointer" onclick="ogrenciDetay('${o.id}')">${xss(o.ad.charAt(0))}</div>
-          <div class="ogrenci-bilgi" onclick="ogrenciDetay('${o.id}')">
-            <div class="ogrenci-ad">${ogrenciTamAdi(o)}</div>
-            <div class="ogrenci-alt">${o.sayisi} değerlendirme${o.devamsizlik?` · 📅 ${xss(o.devamsizlik)} gün`:''} · ${trendIkon(o.trend)}</div>
-          </div>
-          <div class="puan-col" onclick="ogrenciDetay('${o.id}')" style="margin-right:6px">
-            <div class="puan-sayi" style="color:${avatarYazi(o.seviye)}">${o.puan}</div>
-            <span class="rozet ${rozetSinifi(o.seviye)}">${o.seviye}</span>
-          </div>
-          <div style="display:flex;gap:4px;flex-shrink:0">
-            <button class="islem-btn duzenle-btn" onclick="ogrenciDuzenleAc('${o.id}')" title="Düzenle">✏️</button>
-            <button class="islem-btn yazdir-btn-kucuk" onclick="tekliYazdirOgrenci('${o.id}')" title="Yazdır">🖨</button>
-            ${tamYetkiMi()?`<button class="islem-btn sil-btn" onclick="ogrenciSilOnayla('${o.id}')" title="Sil">🗑</button>`:''}
-          </div>
-        </div>`).join('')}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ════════════════════════════════════════════
-// DETAY MODAL
-// ════════════════════════════════════════════
-function ogrenciDetay(id){
-  const o=ogrenciler.find(s=>s.id===id);if(!o)return;
-  detayAcikId=id;
-  const gorDev=degerlendirmeler.filter(d=>d.ogrenciId===id);
-  const son=gorDev.length?gorDev[gorDev.length-1]:null;
-  const puan=son?.puan||0;const sv=son?.riskSeviyesi||'DÜŞÜK';
-  const trend=trendHesapla(id);
-  document.getElementById('detayBaslik').textContent=(o.okulNo?o.okulNo+' — ':'')+o.ad+(o.sinif?' — '+o.sinif:'');
-  document.getElementById('detayIcerik').innerHTML=`
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-      <div class="avatar" style="width:48px;height:48px;font-size:18px;background:${avatarRenk(sv)};color:${avatarYazi(sv)}">${xss(o.ad.charAt(0))}</div>
-      <div>
-        <div style="font-size:16px;font-weight:800">${ogrenciTamAdi(o)}</div>
-        <div style="font-size:12px;color:var(--yazi2)">${xss(o.sinif||'—')} · Veli: ${xss(o.veli||'—')} ${o.telefon?'· 📞'+xss(o.telefon):''}</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <div class="metrik-kart" style="flex:1;padding:10px;box-shadow:none;border:1px solid var(--gri2)"><div style="font-size:22px;font-weight:900;color:${avatarYazi(sv)}">${puan}</div><div style="font-size:11px;color:var(--yazi2)">Son puan</div></div>
-      <div class="metrik-kart" style="flex:1;padding:10px;box-shadow:none;border:1px solid var(--gri2)"><span class="rozet ${rozetSinifi(sv)}" style="margin-top:4px;display:inline-block">${sv}</span><div style="font-size:11px;color:var(--yazi2);margin-top:4px">Seviye</div></div>
-      <div class="metrik-kart" style="flex:1;padding:10px;box-shadow:none;border:1px solid var(--gri2)"><div style="font-size:22px;font-weight:900">${gorDev.length}</div><div style="font-size:11px;color:var(--yazi2)">Değerlendirme</div></div>
-    </div>
-    <div style="font-size:13px;margin-bottom:4px">Trend: ${trendIkon(trend)}</div>`;
-  const uyEl=document.getElementById('kritikYukselisUyari');
-  uyEl.innerHTML=(trend==='yuksek'&&(sv==='KRİTİK'||sv==='YÜKSEK'))?'<div class="uyari-banner" style="margin-top:10px">⚠️ Risk puanı hızla yükseliyor! İvedilikle müdahale önerilir.</div>':'';
-  // Grafik
-  const son10=gorDev.slice(-10);
-  const etiket=son10.map((d,i)=>d.olusturuldu?.toDate?d.olusturuldu.toDate().toLocaleDateString('tr-TR',{day:'numeric',month:'short'}):(i+1)+'.');
-  const pp=son10.map(d=>d.puan||0);
-  const ctx2=document.getElementById('riskGrafik');
-  if(riskChart)riskChart.destroy();
-  riskChart=new Chart(ctx2,{type:'line',data:{labels:etiket,datasets:[{label:'Risk Puanı',data:pp,borderColor:'#1e88e5',backgroundColor:'rgba(30,136,229,0.07)',borderWidth:2.5,pointRadius:6,pointBackgroundColor:pp.map(p=>p>=70?'#B71C1C':p>=45?'#bf360c':p>=20?'#E65100':'#2E7D32'),fill:true,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{font:{size:10},maxRotation:30}}}}});
-  // Geçmiş
-  const gecEl=document.getElementById('detayGozlemler');
-  if(!gorDev.length){gecEl.innerHTML='<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Henüz değerlendirme yapılmamış</div>';return;}
-  gecEl.innerHTML=gorDev.slice().reverse().slice(0,6).map(d=>{
-    const tarih=d.olusturuldu?.toDate?d.olusturuldu.toDate().toLocaleDateString('tr-TR'):'—';
-    const varlar=d.kriterSonuclari?Object.entries(KRITERLER).flatMap(([bk,bolum])=>bolum.kriterler.filter(k=>d.kriterSonuclari[k.id]?.deger==='var').map(k=>`<span class="gd ${bolum.tipi==='koruyucu'?'gd-olumlu':'gd-var'}">${xss(k.metin.substring(0,28))}…</span>`)).join(''):'';
-    return`<div class="gozlem-satir">
-      <div class="gozlem-tarih">${tarih} · ${xss(d.degerlendiren||'—')}</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-        <span style="font-size:18px;font-weight:900;color:${avatarYazi(d.riskSeviyesi||'DÜŞÜK')}">${d.puan||0}</span>
-        <span class="rozet ${rozetSinifi(d.riskSeviyesi||'DÜŞÜK')}">${d.riskSeviyesi||'DÜŞÜK'}</span>
-      </div>
-      <div class="gozlem-degerler">${varlar}</div>
-      ${d.sonuc?`<div style="font-size:12px;color:var(--yazi2);font-style:italic;margin-top:4px">"${xss(d.sonuc.slice(0,120))}"</div>`:''}
-    </div>`;
-  }).join('');
-  document.getElementById('detayOverlay').classList.add('aktif');
-}
-function mudahaleEkleDetay(){modalKapat('detayOverlay');ekranGoster('mudahale');}
-
-// ════════════════════════════════════════════
-// ÖĞRENCİ CRUD
-// ════════════════════════════════════════════
-function ogrenciEkleAc(){document.getElementById('ekleOverlay').classList.add('aktif');}
-function ogrenciEkle(){
-  const ad=document.getElementById('yeniAd').value.trim();
-  if(!ad){toast('Ad girin');return;}
-  db.collection(KOL.ogrenciler).add({
-    okulNo:document.getElementById('yeniOkulNo').value.trim(),
-    ad,sinif:document.getElementById('yeniSinif').value.trim(),
-    devamsizlik:document.getElementById('yeniDevamsizlik').value.trim(),
-    veli:document.getElementById('yeniVeli').value.trim(),
-    telefon:document.getElementById('yeniTelefon').value.trim(),
-    ekleyenUid:mevcutKullanici?.uid,
-    ekleyen:mevcutAd||mevcutKullanici?.email,
-    olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
-  }).then(()=>{
-    toast('✓ '+xss(ad)+' eklendi');
-    modalKapat('ekleOverlay');
-    ['yeniOkulNo','yeniAd','yeniSinif','yeniDevamsizlik','yeniVeli','yeniTelefon'].forEach(i=>document.getElementById(i).value='');
-  }).catch(e=>toast('Hata: '+xss(e.message)));
-}
-function ogrenciDuzenleAc(id){
-  const o=ogrenciler.find(s=>s.id===id);if(!o)return;
-  duzenleId=id;
-  document.getElementById('duzOkulNo').value=o.okulNo||'';
-  document.getElementById('duzAd').value=o.ad||'';
-  document.getElementById('duzSinif').value=o.sinif||'';
-  document.getElementById('duzDevamsizlik').value=o.devamsizlik||'';
-  document.getElementById('duzVeli').value=o.veli||'';
-  document.getElementById('duzTelefon').value=o.telefon||'';
-  document.getElementById('duzenleOverlay').classList.add('aktif');
-}
-function ogrenciDuzenleKaydet(){
-  if(!duzenleId)return;
-  const ad=document.getElementById('duzAd').value.trim();
-  if(!ad){toast('Ad boş olamaz');return;}
-  db.collection(KOL.ogrenciler).doc(duzenleId).update({
-    okulNo:document.getElementById('duzOkulNo').value.trim(),
-    ad,sinif:document.getElementById('duzSinif').value.trim(),
-    devamsizlik:document.getElementById('duzDevamsizlik').value.trim(),
-    veli:document.getElementById('duzVeli').value.trim(),
-    telefon:document.getElementById('duzTelefon').value.trim(),
-    guncelleyen:mevcutAd,guncellenmeTarihi:firebase.firestore.FieldValue.serverTimestamp()
-  }).then(()=>{toast('✓ Güncellendi');modalKapat('duzenleOverlay');duzenleId=null;})
-    .catch(e=>toast('Hata: '+xss(e.message)));
-}
-function ogrenciSilOnayla(id){
-  const o=ogrenciler.find(s=>s.id===id);if(!o)return;
-  if(!confirm('"'+o.ad+'" silinsin mi?\nBu işlem geri alınamaz.'))return;
-  db.collection(KOL.ogrenciler).doc(id).delete().then(()=>toast('🗑 '+xss(o.ad)+' silindi')).catch(e=>toast('Hata: '+xss(e.message)));
-}
-
-// Madde 9: Toplu sınıf güncelle
-function topluSinifGuncelle(){
-  const eski=document.getElementById('eskiSinifSec').value.trim();
-  const yeni=document.getElementById('yeniSinifAdi').value.trim();
-  if(!eski||!yeni){toast('Her iki alanı da doldurun');return;}
-  if(eski===yeni){toast('Sınıf adları aynı');return;}
-  const etkilenenler=ogrenciler.filter(o=>(o.sinif||'Sınıf Girilmemiş')===eski);
-  if(!etkilenenler.length){toast('Bu sınıfta öğrenci bulunamadı');return;}
-  if(!confirm(`"${eski}" sınıfındaki ${etkilenenler.length} öğrenci "${yeni}" olarak güncellensin mi?`))return;
-  const batch=db.batch();
-  etkilenenler.forEach(o=>batch.update(db.collection(KOL.ogrenciler).doc(o.id),{sinif:yeni}));
-  batch.commit().then(()=>toast('✓ '+etkilenenler.length+' öğrenci güncellendi')).catch(e=>toast('Hata: '+xss(e.message)));
-}
-
-// ════════════════════════════════════════════
-// MÜDAHALE
-// ════════════════════════════════════════════
-function mudahaleKaydet(){
-  const ogrenciId=document.getElementById('mudahaleOgrenci').value;
-  if(!ogrenciId){toast('Öğrenci seçin');return;}
-  const son=ogrenciSonPuani(ogrenciId);
-  db.collection(KOL.mudahaleler).add({
-    ogrenciId,
-    islem:document.getElementById('mudahaleIslem').value,
-    sorumlu:document.getElementById('mudahaleSorumlu').value.trim()||mevcutAd||'Bilinmiyor',
-    takip:document.getElementById('mudahaleTakip').value.trim(),
-    not:document.getElementById('mudahaleNot').value.trim(),
-    riskPuani:son.puan,riskSeviyesi:son.seviye,
-    kullanici:mevcutAd||mevcutKullanici?.email,
-    kullaniciUid:mevcutKullanici?.uid,
-    olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
-  }).then(()=>{
-    toast('✓ Müdahale kaydedildi');
-    ['mudahaleSorumlu','mudahaleTakip','mudahaleNot'].forEach(i=>document.getElementById(i).value='');
-  }).catch(e=>toast('Hata: '+xss(e.message)));
-}
-function mudahaleSil(id){
-  if(!mudahaleYetki()){toast('Bu işlem için yetkiniz yok');return;}
-  if(!confirm('Bu müdahale kaydı silinsin mi?'))return;
-  db.collection(KOL.mudahaleler).doc(id).delete().then(()=>toast('🗑 Müdahale silindi')).catch(e=>toast('Hata: '+xss(e.message)));
-}
-function mudahaleGecmisiniRenderEt(){
-  const el=document.getElementById('mudahaleGecmisi');
-  const sinif=document.getElementById('mudGecmisSinif')?.value||'';
-  const ogrenciId=document.getElementById('mudGecmisOgrenci')?.value||'';
-
-  // Hiçbir seçim yapılmamışsa boş mesaj göster
-  if(!sinif&&!ogrenciId){
-    el.innerHTML='<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Sınıf veya öğrenci seçin.</div>';
-    return;
-  }
-
-  // Filtrele
-  let liste=mudahaleler;
-  if(ogrenciId){
-    liste=liste.filter(m=>m.ogrenciId===ogrenciId);
-  } else if(sinif){
-    const siniftakiIds=new Set(ogrenciler.filter(o=>(o.sinif||'Sınıf Girilmemiş')===sinif).map(o=>o.id));
-    liste=liste.filter(m=>siniftakiIds.has(m.ogrenciId));
-  }
-
-  if(!liste.length){el.innerHTML='<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Müdahale kaydı bulunamadı</div>';return;}
-  el.innerHTML=liste.slice(0,20).map(m=>{
-    const o=ogrenciler.find(s=>s.id===m.ogrenciId);
-    const tarih=m.olusturuldu?.toDate?m.olusturuldu.toDate().toLocaleDateString('tr-TR'):'—';
-    const silBtn=mudahaleYetki()?`<button class="islem-btn sil-btn btn-kucuk" style="float:right;margin-top:-4px" onclick="mudahaleSil('${m.id}')" title="Sil">🗑</button>`:'';
-    return`<div class="gozlem-satir">
-      <div class="gozlem-tarih" style="display:flex;justify-content:space-between">${tarih} · ${xss(m.kullanici||'—')}${silBtn}</div>
-      <div style="font-weight:700;font-size:13px">${o?ogrenciTamAdi(o):'—'} <span class="rozet ${rozetSinifi(m.riskSeviyesi||'DÜŞÜK')}">${m.riskSeviyesi||'—'}</span></div>
-      <div style="font-size:13px;margin-top:2px">${xss(m.islem)}</div>
-      <div style="font-size:12px;color:var(--yazi2)">Sorumlu: ${xss(m.sorumlu)}${m.takip?' · Takip: '+xss(m.takip):''}</div>
-      ${m.not?`<div style="font-size:12px;color:var(--yazi2);font-style:italic;margin-top:2px">"${xss(m.not)}"</div>`:''}
-    </div>`;
-  }).join('');
-}
-
-// ════════════════════════════════════════════
-// SELECT GÜNCELLE
-// ════════════════════════════════════════════
-function selectleriGuncelle(){
-  const sortedOgr=[...ogrenciler].sort((a,b)=>{
-    const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;
-    return na!==nb?na-nb:(a.ad||'').localeCompare(b.ad||'','tr');
-  });
-  const opts=sortedOgr.map(o=>`<option value="${o.id}">${o.okulNo?'['+xss(o.okulNo)+'] ':''} ${xss(o.ad)}${o.sinif?' ('+xss(o.sinif)+')':''}</option>`).join('');
-  const bos='<option value="">— Öğrenci seçin —</option>';
-  document.getElementById('formOgrenci').innerHTML=bos+opts;
-  document.getElementById('mudahaleOgrenci').innerHTML=bos+opts;
-}
-
-// ════════════════════════════════════════════
-// YÖNETİM PANELİ
-// ════════════════════════════════════════════
-function yonetimPanelRenderEt(){
-  // Onay bekleyenler
-  const bekleyenler=kullanicilar.filter(k=>!k.onaylandi);
-  const onayEl=document.getElementById('onayListesi');
-  onayEl.innerHTML=bekleyenler.length
-    ?bekleyenler.map(k=>`<div class="kullanici-satir">
-        <div style="flex:1">
-          <div style="font-weight:700;font-size:14px">${xss(k.ad||'—')}</div>
-          <div style="font-size:12px;color:var(--yazi2)">${xss(k.email||'—')} · ${xss(k.rol||'—')}</div>
-        </div>
-        <button class="btn btn-yesil btn-kucuk" style="margin:0" onclick="kullaniciOnayla('${k.id}')">✓ Onayla</button>
-        <button class="islem-btn sil-btn" onclick="kullaniciSil('${k.id}')">🗑</button>
-      </div>`).join('')
-    :'<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Onay bekleyen hesap yok</div>';
-
-  // Tüm kullanıcılar
-  const yonetimEl=document.getElementById('kullaniciYonetimListesi');
-  const aktifler=kullanicilar.filter(k=>k.onaylandi!==false);
-  yonetimEl.innerHTML=aktifler.length
-    ?aktifler.map(k=>{
-      const rolEt={ogretmen:'Öğretmen',rehberlik:'Rehberlik',mudur:'Müdür',admin:'Admin'};
-      return`<div class="kullanici-satir">
-        <div style="flex:1">
-          <div style="font-weight:700;font-size:14px">${xss(k.ad||'—')}</div>
-          <div style="font-size:12px;color:var(--yazi2)">${xss(k.email||'—')} · <span class="rozet r-dusuk" style="font-size:10px">${rolEt[k.rol]||xss(k.rol)||'—'}</span></div>
-        </div>
-        <button class="islem-btn duzenle-btn" onclick="kullaniciDuzenleAc('${k.id}')" title="Düzenle">✏️</button>
-        ${k.email!==ADMIN_EMAIL?`<button class="islem-btn sil-btn" onclick="kullaniciSil('${k.id}')" title="Sil">🗑</button>`:''}
-      </div>`;
-    }).join('')
-    :'<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Kayıtlı kullanıcı yok</div>';
-}
-
-function kullaniciOnayla(uid){
-  db.collection(KOL.kullanicilar).doc(uid).update({onaylandi:true})
-    .then(()=>toast('✓ Hesap onaylandı')).catch(e=>toast('Hata: '+xss(e.message)));
-}
-function kullaniciSil(uid){
-  if(!confirm('Bu kullanıcı Firestore\'dan silinsin mi?'))return;
-  db.collection(KOL.kullanicilar).doc(uid).delete()
-    .then(()=>toast('🗑 Kullanıcı silindi')).catch(e=>toast('Hata: '+xss(e.message)));
-}
-function kullaniciDuzenleAc(uid){
-  const k=kullanicilar.find(u=>u.id===uid);if(!k)return;
-  kdUid=uid;
-  document.getElementById('kdAd').value=k.ad||'';
-  document.getElementById('kdRol').value=k.rol||'ogretmen';
-  document.getElementById('kullaniciDuzenleOverlay').classList.add('aktif');
-}
-function kullaniciDuzenleKaydet(){
-  if(!kdUid)return;
-  const ad=document.getElementById('kdAd').value.trim();
-  if(!ad){toast('Ad boş olamaz');return;}
-  db.collection(KOL.kullanicilar).doc(kdUid).update({
-    ad,rol:document.getElementById('kdRol').value
-  }).then(()=>{toast('✓ Kullanıcı güncellendi');modalKapat('kullaniciDuzenleOverlay');kdUid=null;})
-    .catch(e=>toast('Hata: '+xss(e.message)));
-}
-
-// ════════════════════════════════════════════
-// YAZDIR — YENİ PENCERE YAKLAŞIMI (Print hatası fix)
-// ════════════════════════════════════════════
-// Madde 7: Müdür adını bul
-function mudurAdiBul(){
-  const m=kullanicilar.find(k=>k.rol==='mudur'||k.rol==='admin');
-  return m?xss(m.ad||m.email):'';
-}
-
-// Madde 1-2: Print CSS inline (CSS variables yok, browser header/footer kaldırılacak)
-const A4_CSS=`
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#000;background:#fff;padding:10mm 12mm}
-@page{size:A4 portrait;margin:0}
-@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
-.yazdir-sayfa{page-break-after:always;page-break-inside:avoid;margin-bottom:20px}
-.yazdir-sayfa:last-child{page-break-after:auto}
-.a4-form{width:100%;font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff}
-.a4-bilgi-row{display:flex;gap:16px;margin-bottom:8px;border:1px solid #ddd;border-radius:4px;padding:6px 10px;background:#f8f8f8;flex-wrap:wrap}
-.a4-bilgi-item{flex:1;min-width:120px;font-size:11px}
-.a4-bilgi-item span{font-weight:700}
-.a4-bolum-baslik{font-size:11px;font-weight:800;color:#fff;padding:5px 10px;border-radius:3px;margin:8px 0 4px}
-.a4-b1{background:#1e88e5}.a4-b2{background:#6A1B9A}.a4-b3{background:#E65100}.a4-b4{background:#B71C1C}.a4-b5{background:#2E7D32}
-.a4-tablo{width:100%;border-collapse:collapse;margin-bottom:6px}
-.a4-tablo th{background:#eceff1;padding:5px 8px;text-align:left;font-size:10px;font-weight:700;border:1px solid #ddd}
-.a4-tablo td{padding:5px 8px;border:1px solid #ddd;font-size:10px;vertical-align:top}
-.a4-tablo tr:nth-child(even) td{background:#fafafa}
-.a4-deger-var{color:#B71C1C;font-weight:700}
-.a4-deger-yok{color:#2E7D32;font-weight:700}
-.a4-deger-olumlu{color:#1565C0;font-weight:700}
-.a4-puan-kutu{display:flex;align-items:center;gap:12px;border:2px solid #ddd;border-radius:6px;padding:8px 12px;margin:8px 0;background:#f8f8f8}
-.a4-puan-sayi{font-size:28px;font-weight:900}
-.a4-seviye-rozet{padding:4px 14px;border-radius:12px;font-size:12px;font-weight:800}
-.a4-seviye-kritik{background:#ffebee;color:#B71C1C;border:1px solid #ef9a9a}
-.a4-seviye-yuksek{background:#fff3e0;color:#bf360c;border:1px solid #ffcc80}
-.a4-seviye-orta{background:#fff3e0;color:#E65100;border:1px solid #ffcc80}
-.a4-seviye-dusuk{background:#e8f5e9;color:#2E7D32;border:1px solid #a5d6a7}
-.a4-sonuc{border:1px solid #ddd;border-radius:4px;padding:8px;min-height:40px;background:#fafafa;font-size:11px}
-.a4-imza-row{display:flex;justify-content:space-between;margin-top:14px;padding-top:8px;border-top:1px solid #ddd}
-.a4-imza-kutu{text-align:center;font-size:10px;min-width:150px}
-.a4-imza-cizgi{border-top:1px solid #333;width:150px;margin:22px auto 4px}
-.a4-imza-ad{font-weight:700;font-size:11px;margin-bottom:2px}
-`;
-
-function a4FormHtml(o,devListesi){
-  const son=devListesi.length?devListesi[devListesi.length-1]:null;
-  const puan=son?.puan||0;
-  const sv=son?.riskSeviyesi||'DÜŞÜK';
-  const tarih=son?.olusturuldu?.toDate?son.olusturuldu.toDate().toLocaleDateString('tr-TR'):new Date().toLocaleDateString('tr-TR');
-  const degerlendiren=xss(son?.degerlendiren||mevcutAd||'—');
-  const mudurAd=mudurAdiBul();
-  const sonuc=xss(son?.sonuc||'');
-  const kriterSonuclari=son?.kriterSonuclari||{};
-
-  const bolumHtml=(bolumKey,renk,tipi)=>{
-    const b=KRITERLER[bolumKey];
-    const satirlar=b.kriterler.map(k=>{
-      const d=kriterSonuclari[k.id]?.deger||'';
-      const not=xss(kriterSonuclari[k.id]?.not||'');
-      let dHtml='<span style="color:#aaa">—</span>';
-      if(tipi==='koruyucu'){
-        dHtml=d==='var'?'<span class="a4-deger-olumlu">VAR ✓</span>':d==='yok'?'<span class="a4-deger-yok">YOK</span>':'<span style="color:#aaa">—</span>';
-      }else{
-        dHtml=d==='var'?'<span class="a4-deger-var">VAR</span>':d==='yok'?'<span class="a4-deger-yok">YOK</span>':'<span style="color:#aaa">—</span>';
-      }
-      return`<tr><td>${xss(k.metin)}</td><td style="text-align:center;width:60px">${dHtml}</td><td style="width:130px;font-size:9px;color:#555">${not}</td></tr>`;
-    }).join('');
-    return`<div class="a4-bolum-baslik ${renk}">${xss(b.baslik)}</div>
-    <table class="a4-tablo"><thead><tr><th>Kriter</th><th style="width:60px;text-align:center">Var / Yok</th><th style="width:130px">Gözlem Notu</th></tr></thead><tbody>${satirlar}</tbody></table>`;
-  };
-
-  return`<div class="a4-form">
-    <div class="a4-bilgi-row">
-      <div class="a4-bilgi-item">Adı Soyadı: <span>${o.okulNo?'['+xss(o.okulNo)+'] ':''} ${xss(o.ad)}</span></div>
-      <div class="a4-bilgi-item">Sınıf: <span>${xss(o.sinif||'—')}</span></div>
-      <div class="a4-bilgi-item">Tarih: <span>${tarih}</span></div>
-      <div class="a4-bilgi-item">Değerlendiren: <span>${degerlendiren}</span></div>
-    </div>
-    ${bolumHtml('bolum1','a4-b1','risk')}
-    ${bolumHtml('bolum2','a4-b2','risk')}
-    ${bolumHtml('bolum3','a4-b3','risk')}
-    ${bolumHtml('bolum4','a4-b4','risk')}
-    ${bolumHtml('bolum5','a4-b5','koruyucu')}
-    <div class="a4-puan-kutu">
-      <div><div style="font-size:10px;color:#555;margin-bottom:2px">Risk Puanı</div><div class="a4-puan-sayi" style="color:${avatarYazi(sv)}">${puan}</div><div style="font-size:10px;color:#888">/100</div></div>
-      <div><div style="font-size:10px;color:#555;margin-bottom:4px">Risk Seviyesi</div><span class="a4-seviye-rozet ${a4Seviye(sv)}">${sv}</span></div>
-      <div style="flex:1;padding-left:12px;font-size:10px;color:#555">Toplam değerlendirme: <b>${devListesi.length}</b></div>
-    </div>
-    <div style="font-size:11px;font-weight:700;color:#333;margin-bottom:4px">Değerlendirme Sonucu / Önerilen Müdahale:</div>
-    <div class="a4-sonuc">${sonuc||'—'}</div>
-    <div class="a4-imza-row">
-      <div class="a4-imza-kutu">
-        <div class="a4-imza-ad">${degerlendiren}</div>
-        <div class="a4-imza-cizgi"></div>
-        Değerlendiren Öğretmen / PDR
-      </div>
-      <div class="a4-imza-kutu">
-        <div class="a4-imza-ad">${mudurAd||'—'}</div>
-        <div class="a4-imza-cizgi"></div>
-        Okul Müdürü
-      </div>
-    </div>
-  </div>`;
-}
-
-function tekliYazdirOgrenci(id){
-  const o=ogrenciler.find(s=>s.id===id);if(!o)return;
-  const devs=degerlendirmeler.filter(d=>d.ogrenciId===id);
-  const html=a4FormHtml(o,devs);
-  document.getElementById('yazdirBaslik').textContent='🖨 Yazdır — '+(o.okulNo?o.okulNo+' ':'')+o.ad;
-  document.getElementById('yazdirOnizleme').innerHTML=html;
-  document.getElementById('yazdirOverlay').classList.add('aktif');
-}
-function tekliYazdirDetay(){if(detayAcikId)tekliYazdirOgrenci(detayAcikId);}
-function topluYazdirAc(){
-  if(!ogrenciler.length){toast('Öğrenci bulunamadı');return;}
-  const html=ogrenciler.map(o=>`<div class="yazdir-sayfa">${a4FormHtml(o,degerlendirmeler.filter(d=>d.ogrenciId===o.id))}</div>`).join('');
-  document.getElementById('yazdirBaslik').textContent='🖨 Toplu Yazdır — '+ogrenciler.length+' öğrenci';
-  document.getElementById('yazdirOnizleme').innerHTML=html;
-  document.getElementById('yazdirOverlay').classList.add('aktif');
-}
-
-// Madde 1: Yeni pencerede yazdır (Generic/Text Only hatasını önler)
-function yazdirBaslat(){
-  const icerik=document.getElementById('yazdirOnizleme').innerHTML;
-  const tamHtml=`<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<title>Risk Değerlendirme Formu</title>
-<style>${A4_CSS}</style>
-</head>
-<body>
-${icerik}
-<script>
-window.onload=function(){
-  setTimeout(function(){
-    window.print();
-    setTimeout(function(){window.close();},800);
-  },400);
-};
-<\/script>
-</body>
-</html>`;
-  try{
-    const blob=new Blob([tamHtml],{type:'text/html;charset=utf-8'});
-    const url=URL.createObjectURL(blob);
-    const w=window.open(url,'_blank','width=820,height=1100,menubar=no,toolbar=no');
-    if(!w){toast('Açılır pencere engellendi. Lütfen tarayıcı izinlerinizi kontrol edin.');return;}
-    setTimeout(()=>URL.revokeObjectURL(url),15000);
-    modalKapat('yazdirOverlay');
-  }catch(e){
-    // Fallback: doğrudan print
-    const alan=document.createElement('div');
-    alan.id='_yazdir_fallback';alan.innerHTML=icerik;
-    document.body.appendChild(alan);
-    window.print();
-    setTimeout(()=>document.body.removeChild(alan),2000);
-  }
-}
-
-// ════════════════════════════════════════════
-// AUTH
-// ════════════════════════════════════════════
-function girisSekme(s){
-  document.getElementById('s-giris').classList.toggle('aktif',s==='giris');
-  document.getElementById('s-kayit').classList.toggle('aktif',s==='kayit');
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('aktif',(i===0&&s==='giris')||(i===1&&s==='kayit')));
-}
-function girisYap(){
-  if(!rateLimitGiris())return;
-  const e=document.getElementById('email').value.trim();
-  const s=document.getElementById('sifre').value;
-  if(!e||!s){toast('Bilgileri doldurun');return;}
-  auth.signInWithEmailAndPassword(e,s)
-    .then(()=>{_loginDeneme=0;})
-    .catch(err=>{rateLimitArtir();toast('Hata: '+turkceHata(err.code));});
-}
-function kayitOl(){
-  const ad=document.getElementById('kayitAd').value.trim();
-  const e=document.getElementById('kayitEmail').value.trim();
-  const s=document.getElementById('kayitSifre').value;
-  const rol=document.getElementById('kayitRol').value;
-  if(!ad||!e||!s){toast('Tüm alanları doldurun');return;}
-  const gercekRol=e===ADMIN_EMAIL?'admin':rol;
-  const onaylandi=e===ADMIN_EMAIL;
-  auth.createUserWithEmailAndPassword(e,s)
-    .then(r=>db.collection(KOL.kullanicilar).doc(r.user.uid).set({
-      ad,email:e,rol:gercekRol,onaylandi,
-      olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
-    }))
-    .then(()=>{
-      if(onaylandi)toast('✓ Kayıt başarılı!');
-      else toast('Kaydınız alındı. Yönetici onayı bekleniyor.');
-    })
-    .catch(err=>toast('Hata: '+turkceHata(err.code)));
-}
-function cikisYap(){auth.signOut();}
-function turkceHata(k){
-  const m={'auth/user-not-found':'Kullanıcı bulunamadı','auth/wrong-password':'Şifre hatalı','auth/invalid-email':'Geçersiz e-posta','auth/email-already-in-use':'Bu e-posta zaten kayıtlı','auth/weak-password':'Şifre en az 6 karakter olmalı','auth/invalid-credential':'E-posta veya şifre hatalı','auth/too-many-requests':'Çok fazla deneme, lütfen bekleyin'};
-  return m[k]||k;
-}
-
-function gosterGiris(){
-  document.getElementById('girisEkrani').style.display='flex';
-  document.getElementById('onayEkrani').style.display='none';
-  document.getElementById('anaUygulama').style.display='none';
-  document.getElementById('altMenu').style.display='none';
-}
-function gosterOnayBekliyor(mesaj){
-  document.getElementById('girisEkrani').style.display='none';
-  document.getElementById('onayEkrani').style.display='flex';
-  document.getElementById('anaUygulama').style.display='none';
-  document.getElementById('altMenu').style.display='none';
-  document.getElementById('onayMesaj').textContent=mesaj;
-}
-function gosterUygulama(){
-  document.getElementById('girisEkrani').style.display='none';
-  document.getElementById('onayEkrani').style.display='none';
-  document.getElementById('anaUygulama').style.display='block';
-  document.getElementById('altMenu').style.display='flex';
-}
-
-auth.onAuthStateChanged(kullanici=>{
-  if(kullanici){
-    mevcutKullanici=kullanici;
-    db.collection(KOL.kullanicilar).doc(kullanici.uid).get().then(doc=>{
-      // Admin email: Firestore'daki gerçek adı kullan (ör. "Mahir Han"),
-      // arka planda admin yetkisiyle çalış, arayüzde sadece adı görünsün
-      if(kullanici.email===ADMIN_EMAIL){
-        const ad=doc.exists?(doc.data().ad||kullanici.email):kullanici.email;
-        baslatUygulama('admin',ad);return;
-      }
-      if(!doc.exists){gosterOnayBekliyor('Hesabınız bulunamadı veya silinmiş olabilir.');return;}
-      const d=doc.data();
-      if(!d.onaylandi){gosterOnayBekliyor('Hesabınız yönetici onayı bekliyor. Onaylandıktan sonra giriş yapabilirsiniz.');return;}
-      baslatUygulama(d.rol,d.ad||kullanici.email);
-    }).catch(()=>gosterOnayBekliyor('Hesap bilgileri alınamadı. Lütfen tekrar deneyin.'));
-  }else{
-    mevcutKullanici=null;mevcutRol=null;mevcutAd=null;adminMi=false;
-    ogrenciler=[];degerlendirmeler=[];mudahaleler=[];kullanicilar=[];
-    gosterGiris();
-  }
-});
-
-function baslatUygulama(rol,ad){
-  mevcutRol=rol;mevcutAd=ad;adminMi=(rol==='admin');
-  const rolEt={ogretmen:'Öğretmen',rehberlik:'Rehberlik Uzmanı',mudur:'Müdür / İdare',admin:'Öğretmen'};
-  // Admin perde arkasında çalışır; navbar'da gerçek adı + normal rol etiketi görünür
-  document.getElementById('navRol').textContent=(rolEt[rol]||rol)+' — '+xss(ad);
-  // ADMİN rozeti sadece admin kullanıcının kendi ekranında görünür
-  document.getElementById('adminRozet').style.display=adminMi?'inline-block':'none';
-  document.getElementById('formDegerlendiren').value=ad;
-  // Yönetim butonu: admin, mudur, rehberlik için göster
-  document.getElementById('bn-yonetim').style.display=tamYetkiMi()||adminMi?'flex':'none';
-  gosterUygulama();
-  formuRenderEt();
-  verileriYukle();
-}
-
-// ════════════════════════════════════════════
-// VERİ YÜKLEME
-// ════════════════════════════════════════════
-function verileriYukle(){
-  db.collection(KOL.ogrenciler).onSnapshot(snap=>{
-    ogrenciler=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
-      const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;
-      if(na!==nb)return na-nb;
-      return(a.ad||'').localeCompare(b.ad||'','tr');
-    });
-    sinifCbGuncelle();selectleriGuncelle();ogrencileriRenderEt();anasayfaRenderEt();
-    if(mevcutAd)document.getElementById('formDegerlendiren').value=mevcutAd;
-  },err=>{console.error(err);toast('Veri yüklenemedi');});
-
-  db.collection(KOL.degerlendirmeler).onSnapshot(snap=>{
-    degerlendirmeler=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.olusturuldu?.seconds||0)-(b.olusturuldu?.seconds||0));
-    anasayfaRenderEt();ogrencileriRenderEt();selectleriGuncelle();
-  },err=>console.error(err));
-
-  db.collection(KOL.mudahaleler).onSnapshot(snap=>{
-    mudahaleler=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.olusturuldu?.seconds||0)-(a.olusturuldu?.seconds||0));
-    mudahaleGecmisiniRenderEt();
-  },err=>console.error(err));
-
-  db.collection(KOL.kullanicilar).onSnapshot(snap=>{
-    kullanicilar=snap.docs.map(d=>({id:d.id,...d.data()}));
-    kullaniciCbGuncelle();
-    if(tamYetkiMi())yonetimPanelRenderEt();
-    anasayfaRenderEt();
-  },err=>console.error(err));
-}
-
-// ════════════════════════════════════════════
-// NAVİGASYON
-// ════════════════════════════════════════════
-function ekranGoster(id){
-  document.querySelectorAll('.ekran').forEach(e=>e.classList.remove('aktif'));
-  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('aktif'));
-  document.getElementById('ekran-'+id).classList.add('aktif');
-  document.getElementById('bn-'+id)?.classList.add('aktif');
-  window.scrollTo(0,0);
-  if(id==='ogrenciler')ogrencileriRenderEt();
-  if(id==='mudahale')mudahaleGecmisiniRenderEt();
-  if(id==='yonetim')yonetimPanelRenderEt();
-}
-function modalKapat(id){document.getElementById(id).classList.remove('aktif');}
-function toast(mesaj){
-  const t=document.getElementById('toast');
-  t.textContent=mesaj;t.classList.add('goster');
-  setTimeout(()=>t.classList.remove('goster'),2800);
-}
-</script>
-</body>
-</html>
+diff --git a/index.html b/index.html
+index 70b990c7623f20b0113421c53d4aa047211d0723..de04053f7bc81f75c4da43813b84c3d0a44b507a 100644
+--- a/index.html
++++ b/index.html
+@@ -82,276 +82,289 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
+ .modal-baslik{background:var(--mavi);color:white;padding:16px;display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:700}
+ .modal-icerik{padding:16px}
+ .kapat-btn{background:rgba(255,255,255,.2);border:none;color:white;border-radius:6px;padding:4px 10px;font-size:18px;cursor:pointer;font-family:inherit}
+ .grafik-alan{position:relative;height:200px;margin:10px 0}
+ .giris-ekran{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;background:linear-gradient(160deg,#1565C0 0%,#1e88e5 60%,#42a5f5 100%)}
+ .giris-logo{font-size:48px;margin-bottom:10px}
+ .giris-baslik{color:white;font-size:22px;font-weight:800;text-align:center;margin-bottom:4px}
+ .giris-altyazi{color:rgba(255,255,255,.8);font-size:13px;text-align:center;margin-bottom:30px}
+ .giris-kart{background:white;border-radius:20px;padding:24px 20px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+ .tab-row{display:flex;margin-bottom:18px;border-radius:var(--radius-sm);overflow:hidden;border:1.5px solid var(--mavi-ac)}
+ .tab-btn{flex:1;padding:9px;border:none;background:none;font-size:13px;font-weight:700;cursor:pointer;color:var(--mavi-ac);font-family:inherit}
+ .tab-btn.aktif{background:var(--mavi-ac);color:white}
+ .ic-sekme{display:none}.ic-sekme.aktif{display:block}
+ .gozlem-satir{padding:10px 0;border-bottom:1px solid var(--gri2);font-size:13px}
+ .gozlem-satir:last-child{border-bottom:none}
+ .gozlem-tarih{font-size:11px;color:var(--yazi2);margin-bottom:4px}
+ .gozlem-degerler{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+ .gd{background:var(--gri2);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
+ .gd-var{background:var(--kirmizi-ac);color:var(--kirmizi)}
+ .gd-olumlu{background:var(--yesil-ac);color:var(--yesil)}
+ .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#323232;color:white;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:500;opacity:0;transition:opacity .3s;white-space:nowrap;pointer-events:none;max-width:90vw;text-align:center}
+ .toast.goster{opacity:1}
+ .arama-row{display:flex;gap:8px;margin-bottom:10px}
+ .arama-row input{flex:1}
+ .arama-row select{width:auto;min-width:85px}
++.select-arama{width:100%;padding:9px 11px;border:1.5px solid var(--gri3);border-radius:var(--radius-sm);font-size:13px;margin-bottom:6px}
+ .cb-alani{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+ .cb-etiket{display:flex;align-items:center;gap:5px;background:var(--gri2);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;user-select:none;border:1.5px solid transparent;transition:all .15s}
+ .cb-etiket:has(input:checked){background:var(--mavi-cok-ac);border-color:var(--mavi-ac);color:var(--mavi)}
+ .cb-etiket input{display:none}
+ .cb-tumu{background:var(--mavi-ac);color:white;border-color:var(--mavi-ac)}
+ .cb-tumu:has(input:checked){background:var(--mavi-ac);color:white}
+ .sinif-grup{margin-bottom:14px}
+ .sinif-baslik{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:var(--radius-sm) var(--radius-sm) 0 0;font-size:13px}
+ .islem-btn{border:none;background:var(--gri2);border-radius:6px;padding:6px 8px;font-size:13px;cursor:pointer;line-height:1;transition:background .15s;flex-shrink:0}
+ .islem-btn:active{transform:scale(.9)}
+ .duzenle-btn:hover{background:var(--mavi-cok-ac)}
+ .sil-btn:hover{background:var(--kirmizi-ac)}
+ .yazdir-btn-kucuk:hover{background:#e8f5e9}
+ .yukleniyor{text-align:center;padding:24px;color:var(--yazi2);font-size:14px}
+ .yazdir-onizleme{max-height:60vh;overflow-y:auto;border:1px solid var(--gri3);border-radius:var(--radius-sm);padding:8px;background:var(--gri);margin-bottom:12px}
+ .kullanici-satir{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gri2)}
+ .kullanici-satir:last-child{border-bottom:none}
+ .onay-bekliyor-ekran{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;background:linear-gradient(160deg,#1565C0 0%,#1e88e5 60%,#42a5f5 100%);text-align:center}
+ </style>
+ </head>
+ <body>
+ 
+ <!-- GİRİŞ -->
+ <div id="girisEkrani" class="giris-ekran">
+   <div class="giris-logo">🏫</div>
+   <div class="giris-baslik">Okul Risk Takip</div>
+   <div class="giris-altyazi">Bireysel Erken Uyarı ve Müdahale Sistemi</div>
+   <div class="giris-kart">
+     <div class="tab-row">
+       <button class="tab-btn aktif" onclick="girisSekme('giris')">Giriş Yap</button>
+       <button class="tab-btn" onclick="girisSekme('kayit')">Kayıt Ol</button>
+     </div>
+     <div id="s-giris" class="ic-sekme aktif">
+       <div class="form-grup"><label>E-posta</label><input type="email" id="email" maxlength="100" autocomplete="email"></div>
+       <div class="form-grup"><label>Şifre</label><input type="password" id="sifre" maxlength="100" autocomplete="current-password"></div>
+       <button class="btn btn-mavi" onclick="girisYap()">Giriş Yap</button>
+     </div>
+     <div id="s-kayit" class="ic-sekme">
+       <div class="form-grup"><label>Ad Soyad</label><input type="text" id="kayitAd" maxlength="60"></div>
+       <div class="form-grup"><label>E-posta</label><input type="email" id="kayitEmail" maxlength="100"></div>
+       <div class="form-grup"><label>Şifre</label><input type="password" id="kayitSifre" maxlength="100" placeholder="En az 6 karakter"></div>
+       <div class="form-grup"><label>Rolünüz</label>
++        <input type="text" class="select-arama" id="kayitRolAra" placeholder="🔎 Rol ara..." oninput="selectAramaUygula('kayitRolAra','kayitRol')">
+         <select id="kayitRol">
+           <option value="ogretmen">Sınıf / Branş Öğretmeni</option>
+           <option value="rehberlik">Rehberlik Uzmanı (PDR)</option>
+           <option value="mudur">Müdür / Okul İdaresi</option>
+         </select>
+       </div>
+       <button class="btn btn-mavi" onclick="kayitOl()">Hesap Oluştur</button>
+     </div>
+   </div>
+ </div>
+ 
+ <!-- ONAY BEKLİYOR -->
+ <div id="onayEkrani" class="onay-bekliyor-ekran" style="display:none">
+   <div style="font-size:48px;margin-bottom:16px">⏳</div>
+   <div style="color:white;font-size:20px;font-weight:800;margin-bottom:8px">Hesabınız Onay Bekliyor</div>
+   <div style="color:rgba(255,255,255,.85);font-size:14px;max-width:320px;line-height:1.6" id="onayMesaj">Kaydınız alındı. Yönetici onayından sonra sisteme erişebileceksiniz.</div>
+   <button class="btn btn-beyaz" style="max-width:200px;margin-top:24px" onclick="cikisYap()">Çıkış Yap</button>
+ </div>
+ 
+ <!-- ANA UYGULAMA -->
+ <div id="anaUygulama" style="display:none">
+   <div class="navbar">
+     <div class="navbar-left">
+       <div>
+         <div class="navbar-title">🏫 Risk Değerlendirme</div>
+         <div class="navbar-sub" id="navRol">—</div>
+       </div>
+       <span class="admin-rozet" id="adminRozet" style="display:none">ADMİN</span>
+     </div>
+     <button class="cikis-btn" onclick="cikisYap()">Çıkış</button>
+   </div>
+ 
+   <!-- ANASAYFA -->
+   <div id="ekran-anasayfa" class="ekran aktif">
+     <div class="metrik-grid">
+       <div class="metrik-kart m-mavi"><div class="metrik-sayi" id="m-toplam">—</div><div class="metrik-etiket">Toplam öğrenci</div></div>
+       <div class="metrik-kart m-kirmizi"><div class="metrik-sayi" id="m-kritik">—</div><div class="metrik-etiket">Kritik risk</div></div>
+       <div class="metrik-kart m-turuncu"><div class="metrik-sayi" id="m-yuksek">—</div><div class="metrik-etiket">Yüksek risk</div></div>
+       <div class="metrik-kart m-yesil"><div class="metrik-sayi" id="m-bugun">—</div><div class="metrik-etiket">Bugün değerlendirilen</div></div>
+     </div>
+     <div id="onayBekleyenBanner"></div>
+     <div id="kritikBanner"></div>
+     <!-- Kullanıcı Filtresi — açılır menü -->
+     <div class="kart" style="padding:12px 14px;margin-bottom:14px">
+       <div style="font-size:11px;font-weight:700;color:var(--yazi2);margin-bottom:6px">👤 KULLANICI FİLTRESİ</div>
++      <input type="text" class="select-arama" id="kullaniciFiltreAra" placeholder="🔎 Kullanıcı ara..." oninput="selectAramaUygula('kullaniciFiltreAra','kullaniciFiltreSel')">
+       <select id="kullaniciFiltreSel" onchange="kullaniciSeldegisti()" style="width:100%">
+-        <option value="">— Tümünü göster —</option>
++        <option value="">— Kullanıcı seçiniz —</option>
+       </select>
+     </div>
+     <div class="kart">
+       <div class="kart-baslik"><span class="kart-baslik-sol">⚠️ Acil Takip Listesi</span></div>
+       <div id="acilListe"><div class="yukleniyor">Yükleniyor...</div></div>
+     </div>
+     <div class="kart">
+       <div class="kart-baslik"><span class="kart-baslik-sol">📊 Risk Dağılımı</span></div>
+       <div class="grafik-alan"><canvas id="dagilimGrafik"></canvas></div>
+     </div>
+   </div>
+ 
+   <!-- ÖĞRENCİLER -->
+   <div id="ekran-ogrenciler" class="ekran">
+     <!-- Butonlar en üstte -->
+     <div class="btn-satir" style="margin-bottom:12px">
+       <button class="btn btn-mavi" onclick="ogrenciEkleAc()">+ Yeni Öğrenci</button>
+       <button class="btn btn-yesil" onclick="topluYazdirAc()">🖨 Toplu Yazdır</button>
+     </div>
+     <div class="kart" style="margin-bottom:10px;padding:12px 14px">
+       <div class="arama-row">
+         <input type="text" id="aramaInput" placeholder="🔍  Öğrenci ara..." maxlength="60" oninput="ogrencileriRenderEt()">
+         <select id="filtreSeviye" onchange="ogrencileriRenderEt()">
+           <option value="">Tüm riskler</option>
+           <option value="KRİTİK">Kritik</option>
+           <option value="YÜKSEK">Yüksek</option>
+           <option value="ORTA">Orta</option>
+           <option value="DÜŞÜK">Düşük</option>
+         </select>
+       </div>
+       <div style="font-size:11px;font-weight:700;color:var(--yazi2);margin-bottom:6px">SINIF FİLTRESİ</div>
++      <input type="text" class="select-arama" id="sinifFiltreAra" placeholder="🔎 Sınıf ara..." oninput="selectAramaUygula('sinifFiltreAra','sinifFiltreSel')">
+       <select id="sinifFiltreSel" onchange="sinifSeldegisti()" style="width:100%">
+-        <option value="">— Tüm sınıfları göster —</option>
++        <option value="">— Sınıf seçiniz —</option>
+       </select>
+     </div>
+     <div id="ogrenciListesiWrap"><div class="yukleniyor">Yükleniyor...</div></div>
+   </div>
+ 
+   <!-- FORM -->
+   <div id="ekran-form" class="ekran">
+     <div class="kart">
+       <div class="kart-baslik"><span class="kart-baslik-sol">📋 Risk Değerlendirme Formu</span></div>
+       <div class="bilgi-banner">ℹ️ Bu form bir tanı aracı değildir. Gözlemler, riskleri somutlaştırmak ve üzerinde çalışmak içindir.</div>
+       <div class="form-grup">
+         <label>Sınıf seç</label>
++        <input type="text" class="select-arama" id="formSinifAra" placeholder="🔎 Sınıf ara..." oninput="selectAramaUygula('formSinifAra','formSinif')">
+         <select id="formSinif" onchange="formSinifDegisti()"><option value="">— Önce sınıf seçin —</option></select>
+       </div>
+       <div class="form-grup">
+         <label>Öğrenci seç</label>
++        <input type="text" class="select-arama" id="formOgrAra" placeholder="🔎 Öğrenci ara..." oninput="selectAramaUygula('formOgrAra','formOgrenci')">
+         <select id="formOgrenci" onchange="formOgrenciDegisti()"><option value="">— Öğrenci seçin —</option></select>
+       </div>
+       <div class="form-grup">
+         <label>Değerlendiren</label>
+         <input type="text" id="formDegerlendiren" readonly style="background:var(--gri2)">
+       </div>
+     </div>
+     <div class="kart"><div class="bolum-baslik b-mavi">1. Davranışsal ve Sosyal Göstergeler</div><div id="bolum1"></div></div>
+     <div class="kart"><div class="bolum-baslik b-mor">2. İdeolojik, Dijital Sızıntı ve Kimlik Faktörleri</div><div id="bolum2"></div></div>
+     <div class="kart"><div class="bolum-baslik b-turuncu">3. Aile ve Çevresel Faktörler</div><div id="bolum3"></div></div>
+     <div class="kart"><div class="bolum-baslik b-kirmizi">4. Risk Seviyesi ve Eylem Planı</div><div id="bolum4"></div></div>
+     <div class="kart">
+       <div class="bolum-baslik b-yesil">5. Koruyucu Faktörler — "Var" seçimi riski AZALTIR ✓</div>
+       <div id="bolum5"></div>
+     </div>
+     <div class="kart">
+       <div class="kart-baslik"><span class="kart-baslik-sol">📊 Hesaplanan Risk Skoru</span></div>
+       <div class="puan-onizleme">
+         <div>
+           <div style="font-size:12px;color:var(--yazi2);margin-bottom:2px">Toplam puan</div>
+           <span class="puan-onizleme-sayi" id="onizlemePuan">0</span>
+           <span style="font-size:12px;color:var(--yazi2);margin-left:4px">/ 100</span>
+         </div>
+         <span class="rozet r-dusuk" id="onizlemeRozet">DÜŞÜK</span>
+       </div>
+       <div id="puanDetay" style="font-size:12px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+       <div class="form-grup">
+         <label>Değerlendirme sonucu / Önerilen müdahale</label>
+         <textarea id="formSonuc" maxlength="1000"></textarea>
+       </div>
+       <button class="btn btn-mavi" onclick="formuKaydet()">✓ Değerlendirmeyi Kaydet</button>
+       <button class="btn btn-beyaz" onclick="formuSifirla()">Formu Temizle</button>
+     </div>
+   </div>
+ 
+   <!-- MÜDAHALE -->
+   <div id="ekran-mudahale" class="ekran">
+     <div class="kart">
+       <div class="kart-baslik"><span class="kart-baslik-sol">🛡️ Müdahale Kaydı</span></div>
+-      <div class="form-grup"><label>Öğrenci</label><select id="mudahaleOgrenci"><option value="">— Öğrenci seçin —</option></select></div>
++      <div class="form-grup"><label>Öğrenci</label><input type="text" class="select-arama" id="mudahaleOgrAra" placeholder="🔎 Öğrenci ara..." oninput="selectAramaUygula('mudahaleOgrAra','mudahaleOgrenci')"><select id="mudahaleOgrenci"><option value="">— Öğrenci seçin —</option></select></div>
+       <div class="form-grup"><label>Yapılan işlem</label>
+         <select id="mudahaleIslem">
+           <option value="Sadece izlemeye alındı">Sadece izleme</option>
+           <option value="Rehberlik görüşmesi yapıldı">Rehberlik görüşmesi</option>
+           <option value="Veli çağrıldı ve bilgilendirildi">Veli çağrıldı</option>
+           <option value="Psikolojik takibe alındı">Psikolojik takip</option>
+           <option value="Sınıf öğretmeniyle koordinasyon sağlandı">Öğretmen koordinasyonu</option>
+           <option value="Dış kuruma (RAM/hastane) yönlendirme yapıldı">Dış kuruma yönlendirme</option>
+           <option value="Anında kriz müdahalesi yapıldı">Anında kriz müdahalesi</option>
+           <option value="Mülki amir / emniyet bilgilendirildi">Mülki amir / emniyet bilgilendirildi</option>
+         </select>
+       </div>
+       <div class="form-grup"><label>Sorumlu kişi</label><input type="text" id="mudahaleSorumlu" maxlength="60"></div>
+-      <div class="form-grup"><label>Takip tarihi</label><input type="text" id="mudahaleTakip" maxlength="40"></div>
++      <div class="form-grup"><label>Takip tarihi</label><input type="text" id="mudahaleTakip" maxlength="40" placeholder="01.01.2026"></div>
+       <div class="form-grup"><label>Not</label><textarea id="mudahaleNot" maxlength="500"></textarea></div>
+       <button class="btn btn-mavi" onclick="mudahaleKaydet()">✓ Müdahaleyi Kaydet</button>
+     </div>
+     <div class="kart">
+       <div class="kart-baslik"><span class="kart-baslik-sol">📋 Müdahale Geçmişi</span></div>
+       <div style="display:flex;gap:8px;margin-bottom:12px">
++        <input type="text" class="select-arama" id="mudGecmisSinifAra" placeholder="🔎 Sınıf ara..." oninput="selectAramaUygula('mudGecmisSinifAra','mudGecmisSinif')" style="flex:1">
+         <select id="mudGecmisSinif" onchange="mudGecmisSinifDegisti()" style="flex:1">
+           <option value="">— Sınıf seçin —</option>
+         </select>
++        <input type="text" class="select-arama" id="mudGecmisOgrAra" placeholder="🔎 Öğrenci ara..." oninput="selectAramaUygula('mudGecmisOgrAra','mudGecmisOgrenci')" style="flex:1">
+         <select id="mudGecmisOgrenci" onchange="mudahaleGecmisiniRenderEt()" style="flex:1">
+           <option value="">— Öğrenci seçin —</option>
+         </select>
+       </div>
+       <div id="mudahaleGecmisi"><div style="color:var(--yazi2);font-size:13px;padding:8px 0">Sınıf veya öğrenci seçin.</div></div>
+     </div>
+   </div>
+ 
+   <!-- YÖNETİM PANELİ -->
+   <div id="ekran-yonetim" class="ekran">
+     <!-- Onay Bekleyenler -->
+     <div class="kart">
+       <div class="kart-baslik"><span class="kart-baslik-sol">⏳ Onay Bekleyen Hesaplar</span></div>
+       <div id="onayListesi"><div class="yukleniyor">Yükleniyor...</div></div>
+     </div>
+     <!-- Kullanıcı Yönetimi -->
+     <div class="kart">
+       <div class="kart-baslik"><span class="kart-baslik-sol">👥 Kullanıcı Yönetimi</span></div>
++      <input type="text" class="select-arama" id="kullaniciYonetimAra" placeholder="🔎 Kullanıcı ara..." oninput="selectAramaUygula('kullaniciYonetimAra','kullaniciYonetimSec')">
++      <select id="kullaniciYonetimSec" onchange="kullaniciYonetimSecDegisti()">
++        <option value="">— Tüm kullanıcılar —</option>
++      </select>
+       <div id="kullaniciYonetimListesi"><div class="yukleniyor">Yükleniyor...</div></div>
+     </div>
+     <!-- Toplu Sınıf Güncelleme -->
+     <div class="kart">
+       <div class="kart-baslik"><span class="kart-baslik-sol">🏫 Toplu Sınıf Güncelleme</span></div>
+       <div class="bilgi-banner">Bir sınıfın tüm öğrencilerini yeni bir sınıfa taşımak için kullanın. (örn: 9-A → 10-A)</div>
+       <div class="form-grup"><label>Mevcut Sınıf Adı</label>
++        <input type="text" class="select-arama" id="eskiSinifAra" placeholder="🔎 Sınıf ara..." oninput="selectAramaUygula('eskiSinifAra','eskiSinifSec')">
+         <select id="eskiSinifSec"><option value="">— Seçin —</option></select>
+       </div>
+       <div class="form-grup"><label>Yeni Sınıf Adı</label>
+         <input type="text" id="yeniSinifAdi" maxlength="20" placeholder="10-A">
+       </div>
+       <button class="btn btn-mavi" onclick="topluSinifGuncelle()">Tüm Sınıfı Güncelle</button>
+     </div>
+   </div>
+ </div><!-- /anaUygulama -->
+ 
+ <!-- ALT MENÜ -->
+ <div class="bottom-nav" id="altMenu" style="display:none">
+   <button class="bnav-btn aktif" id="bn-anasayfa" onclick="ekranGoster('anasayfa')"><span class="ikon">🏠</span>Anasayfa</button>
+   <button class="bnav-btn" id="bn-ogrenciler" onclick="ekranGoster('ogrenciler')"><span class="ikon">👥</span>Öğrenciler</button>
+   <button class="bnav-btn" id="bn-form" onclick="ekranGoster('form')"><span class="ikon">📋</span>Form Doldur</button>
+   <button class="bnav-btn" id="bn-mudahale" onclick="ekranGoster('mudahale')"><span class="ikon">🛡️</span>Müdahale</button>
+   <button class="bnav-btn" id="bn-yonetim" onclick="ekranGoster('yonetim')" style="display:none"><span class="ikon">⚙️</span>Yönetim</button>
+ </div>
+ 
+ <!-- DETAY MODAL -->
+ <div class="overlay" id="detayOverlay">
+   <div class="modal">
+     <div class="modal-baslik"><span id="detayBaslik">Öğrenci Detayı</span><button class="kapat-btn" onclick="modalKapat('detayOverlay')">✕</button></div>
+     <div class="modal-icerik">
+       <div id="detayIcerik"></div>
+@@ -388,122 +401,174 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
+ 
+ <!-- DÜZENLE MODAL -->
+ <div class="overlay" id="duzenleOverlay">
+   <div class="modal">
+     <div class="modal-baslik"><span>✏️ Öğrenci Düzenle</span><button class="kapat-btn" onclick="modalKapat('duzenleOverlay')">✕</button></div>
+     <div class="modal-icerik">
+       <div class="form-grup"><label>Okul No</label><input type="text" id="duzOkulNo" maxlength="20"></div>
+       <div class="form-grup"><label>Ad Soyad</label><input type="text" id="duzAd" maxlength="60"></div>
+       <div class="form-grup"><label>Sınıf</label><input type="text" id="duzSinif" maxlength="20"></div>
+       <div class="form-grup"><label>Devamsızlık (gün)</label><input type="text" id="duzDevamsizlik" maxlength="6"></div>
+       <div class="form-grup"><label>Veli Adı</label><input type="text" id="duzVeli" maxlength="60"></div>
+       <div class="form-grup"><label>Veli Telefonu</label><input type="text" id="duzTelefon" maxlength="20"></div>
+       <button class="btn btn-mavi" onclick="ogrenciDuzenleKaydet()">✓ Kaydet</button>
+       <button class="btn btn-beyaz" onclick="modalKapat('duzenleOverlay')">İptal</button>
+     </div>
+   </div>
+ </div>
+ 
+ <!-- KULLANICI DÜZENLE MODAL -->
+ <div class="overlay" id="kullaniciDuzenleOverlay">
+   <div class="modal">
+     <div class="modal-baslik"><span>✏️ Kullanıcı Düzenle</span><button class="kapat-btn" onclick="modalKapat('kullaniciDuzenleOverlay')">✕</button></div>
+     <div class="modal-icerik">
+       <div class="form-grup"><label>Ad Soyad</label><input type="text" id="kdAd" maxlength="60"></div>
+       <div class="form-grup"><label>Rol</label>
++        <input type="text" class="select-arama" id="kdRolAra" placeholder="🔎 Rol ara..." oninput="selectAramaUygula('kdRolAra','kdRol')">
+         <select id="kdRol">
+           <option value="ogretmen">Öğretmen</option>
+           <option value="rehberlik">Rehberlik Uzmanı (PDR)</option>
+           <option value="mudur">Müdür / İdare</option>
+           <option value="admin">Admin</option>
+         </select>
+       </div>
+       <button class="btn btn-mavi" onclick="kullaniciDuzenleKaydet()">✓ Kaydet</button>
+       <button class="btn btn-beyaz" onclick="modalKapat('kullaniciDuzenleOverlay')">İptal</button>
+     </div>
+   </div>
+ </div>
+ 
+ <!-- YAZDIR MODAL -->
+ <div class="overlay" id="yazdirOverlay">
+   <div class="modal">
+     <div class="modal-baslik"><span id="yazdirBaslik">🖨 Yazdır</span><button class="kapat-btn" onclick="modalKapat('yazdirOverlay')">✕</button></div>
+     <div class="modal-icerik">
+       <div class="bilgi-banner">ℹ️ Yazdır butonuna basıldığında yeni bir pencere açılır. Yazıcı seçim ekranında "Üst bilgi ve alt bilgileri yazdır" seçeneğini kapatın. Farklı Kaydet → PDF ile PDF olarak da kaydedebilirsiniz.</div>
+       <div id="yazdirOnizleme" class="yazdir-onizleme"></div>
+       <div class="btn-satir">
+         <button class="btn btn-yesil" onclick="yazdirBaslat()">🖨 Yazdır / PDF Kaydet</button>
+         <button class="btn btn-beyaz" onclick="modalKapat('yazdirOverlay')">İptal</button>
+       </div>
+     </div>
+   </div>
+ </div>
+ 
+ <div class="toast" id="toast"></div>
+ 
+ <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+ 
+ <script>
+ // ════════════════════════════════════════════
+ // GÜVENLİK YARDIMCILARI
+ // ════════════════════════════════════════════
+ function xss(str){
+   if(!str) return '';
+   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+ }
++function toTitleCase(str){
++  return (str||'').toLocaleLowerCase('tr-TR').split(/\s+/).filter(Boolean)
++    .map(k=>k.charAt(0).toLocaleUpperCase('tr-TR')+k.slice(1)).join(' ');
++}
++function formatSinifSube(str){
++  const parcalar=(str||'').trim().replace(/[_]+/g,' ').replace(/\s*-\s*/g,' ').split(/\s+/).filter(Boolean);
++  if(!parcalar.length) return '';
++  if(parcalar.length===1) return parcalar[0].toLocaleUpperCase('tr-TR');
++  const ilk=parcalar[0].toLocaleUpperCase('tr-TR');
++  const sube=parcalar[1].toLocaleUpperCase('tr-TR');
++  const devam=parcalar.slice(2).join(' ').toLocaleUpperCase('tr-TR');
++  return `${ilk}-${sube}${devam?' '+devam:''}`;
++}
++function formatTarihNokta(str){
++  const rakam=(str||'').replace(/\D/g,'').slice(0,8);
++  const g=rakam.slice(0,2), a=rakam.slice(2,4), y=rakam.slice(4,8);
++  return [g,a,y].filter(Boolean).join('.');
++}
++function kullaniciGorunenAd(k){
++  if(!k) return '—';
++  if(k.email===ADMIN_EMAIL||k.rol==='admin') return ADMIN_GORUNEN_AD;
++  return k.ad||k.email||'—';
++}
++function aktifKullaniciAdi(){
++  if(mevcutAd) return mevcutAd;
++  if(mevcutKullanici?.email===ADMIN_EMAIL) return ADMIN_GORUNEN_AD;
++  return mevcutKullanici?.email||'—';
++}
++function selectAramaUygula(aramaId,selectId){
++  const input=document.getElementById(aramaId);
++  const sel=document.getElementById(selectId);
++  if(!input||!sel) return;
++  const q=input.value.toLocaleLowerCase('tr-TR').trim();
++  Array.from(sel.options).forEach((o,i)=>{
++    if(i===0){o.hidden=false;return;}
++    o.hidden=!!q && !o.text.toLocaleLowerCase('tr-TR').includes(q);
++  });
++}
++function tumSelectlereAramaEkle(){
++  document.querySelectorAll('select').forEach((sel,idx)=>{
++    if(sel.previousElementSibling?.classList?.contains('select-arama')) return;
++    const arama=document.createElement('input');
++    arama.type='text';
++    arama.className='select-arama';
++    arama.id=`otoAra-${sel.id||idx}`;
++    arama.placeholder='🔎 Seçenek ara...';
++    arama.addEventListener('input',()=>selectAramaUygula(arama.id,sel.id));
++    sel.parentNode.insertBefore(arama,sel);
++  });
++}
+ // Giriş denemesi sınırlayıcı
+ let _loginDeneme=0, _loginBlok=0;
+ function rateLimitGiris(){
+   if(Date.now()<_loginBlok){ toast('Çok fazla deneme. '+(Math.ceil((_loginBlok-Date.now())/1000))+'s bekleyin.'); return false; }
+   return true;
+ }
+ function rateLimitArtir(){
+   _loginDeneme++;
+   if(_loginDeneme>=5){ _loginBlok=Date.now()+30000; _loginDeneme=0; }
+ }
+ 
+ // ════════════════════════════════════════════
+ // FİREBASE
+ // ════════════════════════════════════════════
+ const firebaseConfig={
+   apiKey:"AIzaSyDC0pchXZNp19fr1mB24UsafIOiSqoR-l0",
+   authDomain:"risk-analizi-mahirhan.firebaseapp.com",
+   projectId:"risk-analizi-mahirhan"
+ };
+ firebase.initializeApp(firebaseConfig);
+ const db=firebase.firestore();
+ const auth=firebase.auth();
+ 
+ const KOL={
+   ogrenciler:"ogrenciler",
+   degerlendirmeler:"degerlendirmeler",
+   mudahaleler:"mudahaleler",
+   kullanicilar:"kullanicilar"
+ };
+ const ADMIN_EMAIL="fizikcimhr@gmail.com";
++const ADMIN_GORUNEN_AD="Mahir Han";
+ 
+ // ════════════════════════════════════════════
+ // KRİTERLER — 5 BÖLÜM
+ // ════════════════════════════════════════════
+ const KRITERLER={
+   bolum1:{baslik:"Davranışsal ve Sosyal Göstergeler",tipi:"risk",kriterler:[
+     {id:"b1k1",metin:"Ani öfke patlamaları veya kontrolsüz saldırganlık sergiliyor mu?",agirlik:8},
+     {id:"b1k2",metin:"Akranları tarafından dışlanma veya yoğun zorbalığa maruz kalıyor mu?",agirlik:6},
+     {id:"b1k3",metin:"Aşırı içe kapanıklık ve sosyal izolasyon belirtileri var mı?",agirlik:6},
+     {id:"b1k4",metin:"Okul disiplin geçmişinde şiddet içerikli olaylar mevcut mu?",agirlik:7},
+     {id:"b1k5",metin:"Derslerde ani akademik düşüş yaşıyor mu?",agirlik:5},
+     {id:"b1k6",metin:"Olaylardan sonra aşırı sessizleşiyor ya da konuyu sürekli dillendiriyor mu?",agirlik:5},
+   ]},
+   bolum2:{baslik:"İdeolojik, Dijital Sızıntı ve Kimlik Faktörleri",tipi:"risk",kriterler:[
+     {id:"b2k1",metin:"Sosyal medyada şiddet, silah veya baskın içerikli paylaşımlar yapıyor mu?",agirlik:10},
+     {id:"b2k2",metin:"Geçmişteki okul saldırganlarına veya şiddet figürlerine hayranlık duyuyor mu?",agirlik:10},
+     {id:"b2k3",metin:"Çizimlerinde, yazılarında veya ödevlerinde yoğun ölüm/intikam temaları var mı?",agirlik:8},
+     {id:"b2k4",metin:"Ateşli silahlara veya patlayıcılara karşı olağanüstü ilgi gösteriyor mu?",agirlik:9},
+     {id:"b2k5",metin:"İnternet ortamında şiddet içerikli içeriklere aşırı maruz kalıyor mu?",agirlik:4},
+     {id:"b2k6",metin:"Zararlı alışkanlıkları (madde kullanımı vb.) olabileceği düşünülüyor mu?",agirlik:7},
+     {id:"b2k7",metin:"Kimliği, kültürel arka planı veya kişisel özellikleri nedeniyle akranları tarafından ötekileştirildiğine dair gözlem var mı?",agirlik:7},
+     {id:"b2k8",metin:"Belirli bir inanç, köken veya bireysel özelliği nedeniyle dışlanma ya da ayrımcılığa maruz kaldığına dair belirti var mı?",agirlik:7},
+     {id:"b2k9",metin:"Aidiyet duygusu zayıf; kendini 'yabancı' ya da 'öteki' olarak hissediyor gibi görünüyor mu?",agirlik:5},
+   ]},
+   bolum3:{baslik:"Aile ve Çevresel Faktörler",tipi:"risk",kriterler:[
+@@ -512,52 +577,53 @@ const KRITERLER={
+     {id:"b3k3",metin:"Yakın zamanda yaşanan ağır kayıp, ayrılık veya travma mevcut mu?",agirlik:7},
+     {id:"b3k4",metin:"Aile içinde madde kullanımı olabileceği düşünülüyor mu?",agirlik:6},
+   ]},
+   bolum4:{baslik:"Risk Seviyesi ve Eylem Planı",tipi:"risk",kriterler:[
+     {id:"b4k1",metin:"Okuldan olumsuz ayrılan ve sosyal medya / çevresi aracılığıyla okula zarar verme riski taşıyan bireylerle bağlantısı var mı?",agirlik:10},
+   ]},
+   bolum5:{baslik:"Koruyucu Faktörler",tipi:"koruyucu",kriterler:[
+     {id:"b5k1",metin:"Güçlü ve sağlıklı arkadaşlık ilişkileri var mı?",agirlik:5},
+     {id:"b5k2",metin:"Okul etkinliklerine veya kulüplere aktif olarak katılıyor mu?",agirlik:4},
+     {id:"b5k3",metin:"Güvendiği ve rahatlıkla konuşabildiği bir yetişkin (öğretmen, aile üyesi) var mı?",agirlik:6},
+     {id:"b5k4",metin:"Akademik açıdan istikrarlı veya gelişme gösteriyor mu?",agirlik:4},
+     {id:"b5k5",metin:"Duygularını sağlıklı biçimde ifade edebildiğine dair gözlemler var mı?",agirlik:5},
+     {id:"b5k6",metin:"Aile desteği güçlü; öğrenciyle düzenli ve olumlu iletişim kuruluyor mu?",agirlik:4},
+   ]}
+ };
+ // Risk puanı hesaplama için: pozitif ağırlıklar toplamı
+ const MAKS_RISK_PUAN=Object.values(KRITERLER).filter(b=>b.tipi==='risk').flatMap(b=>b.kriterler).reduce((t,k)=>t+k.agirlik,0);
+ const MAKS_KORUYUCU=Object.values(KRITERLER).filter(b=>b.tipi==='koruyucu').flatMap(b=>b.kriterler).reduce((t,k)=>t+k.agirlik,0);
+ 
+ // ════════════════════════════════════════════
+ // DURUM
+ // ════════════════════════════════════════════
+ let ogrenciler=[],degerlendirmeler=[],mudahaleler=[],kullanicilar=[];
+ let mevcutKullanici=null,mevcutRol=null,mevcutAd=null,adminMi=false;
+ let dagilimChart=null,riskChart=null;
+-let secilenSinifFiltre='';    // '' = tümünü göster
+-let secilenKullaniciFiltre=''; // '' = tümünü göster
++let secilenSinifFiltre='';
++let secilenKullaniciFiltre=''; // '' = kullanıcı seçilmedi
++let secilenYonetimKullanici='';
+ let detayAcikId=null,duzenleId=null,kdUid=null;
+ 
+ // ════════════════════════════════════════════
+ // YETKİ
+ // ════════════════════════════════════════════
+ function tamYetkiMi(){return adminMi||mevcutRol==='rehberlik'||mevcutRol==='mudur';}
+ function mudahaleYetki(){return tamYetkiMi();}
+ 
+ // ════════════════════════════════════════════
+ // RİSK HESAPLAMA
+ // ════════════════════════════════════════════
+ function riskPuanHesapla(kriterSonuclari){
+   if(!kriterSonuclari) return 0;
+   let riskToplam=0,koruyucuToplam=0;
+   Object.values(KRITERLER).forEach(bolum=>{
+     bolum.kriterler.forEach(k=>{
+       const deger=kriterSonuclari[k.id]?.deger;
+       if(deger==='var'){
+         if(bolum.tipi==='koruyucu') koruyucuToplam+=k.agirlik;
+         else riskToplam+=k.agirlik;
+       }
+     });
+   });
+   const ham=(riskToplam/MAKS_RISK_PUAN)*100-(koruyucuToplam/MAKS_KORUYUCU)*28;
+   return Math.round(Math.max(0,Math.min(100,ham)));
+@@ -696,137 +762,139 @@ function formuSifirla(){
+   document.getElementById('formSonuc').value='';
+   document.getElementById('formOgrenci').value='';
+   onizlemeGuncelle();
+ }
+ 
+ function formuKaydet(){
+   const ogrenciId=document.getElementById('formOgrenci').value;
+   if(!ogrenciId){toast('Öğrenci seçin');return;}
+   const kriterSonuclari={};
+   let riskT=0,korT=0;
+   Object.values(KRITERLER).forEach(bolum=>{
+     bolum.kriterler.forEach(k=>{
+       const deger=kriterDegeri(k.id);
+       const not=document.getElementById('not-'+k.id)?.value||'';
+       kriterSonuclari[k.id]={deger,not};
+       if(deger==='var'){
+         if(bolum.tipi==='koruyucu')korT+=k.agirlik;else riskT+=k.agirlik;
+       }
+     });
+   });
+   const puan=Math.round(Math.max(0,Math.min(100,(riskT/MAKS_RISK_PUAN)*100-(korT/MAKS_KORUYUCU)*28)));
+   const sonuc=document.getElementById('formSonuc').value.trim();
+   db.collection(KOL.degerlendirmeler).add({
+     ogrenciId,kriterSonuclari,puan,
+     riskSeviyesi:riskSeviyesi(puan),sonuc,
+-    degerlendiren:mevcutAd||mevcutKullanici?.email,
++    degerlendiren:aktifKullaniciAdi(),
+     degerlendirenUid:mevcutKullanici?.uid,
+     degerlendirenRol:mevcutRol,
+     olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
+   }).then(()=>{toast('✓ Değerlendirme kaydedildi — Puan: '+puan);formuSifirla();})
+     .catch(e=>toast('Hata: '+xss(e.message)));
+ }
+ 
+ // ════════════════════════════════════════════
+ // ANASAYFA
+ // ════════════════════════════════════════════
+ function anasayfaRenderEt(){
+-  // Kullanıcı filtresi: seçili uid varsa sadece o kullanıcının öğrencileri
+-  let filtreliOgr=ogrenciler;
+-  if(secilenKullaniciFiltre){
++  // Kullanıcı seçilmeden listelenmesin
++  let filtreliOgr=[];
++  if(secilenKullaniciFiltre==='__ALL__'){
++    filtreliOgr=ogrenciler;
++  }else if(secilenKullaniciFiltre){
+     const gosterilecekIds=new Set();
+     degerlendirmeler.forEach(d=>{if(d.degerlendirenUid===secilenKullaniciFiltre)gosterilecekIds.add(d.ogrenciId);});
+     ogrenciler.forEach(o=>{if(o.ekleyenUid===secilenKullaniciFiltre)gosterilecekIds.add(o.id);});
+     filtreliOgr=ogrenciler.filter(o=>gosterilecekIds.has(o.id));
+   }
+   const puanli=filtreliOgr.map(o=>{
+     const son=ogrenciSonPuani(o.id);
+     return{...o,...son,trend:trendHesapla(o.id)};
+   });
+   document.getElementById('m-toplam').textContent=filtreliOgr.length;
+   document.getElementById('m-kritik').textContent=puanli.filter(o=>o.seviye==='KRİTİK').length;
+   document.getElementById('m-yuksek').textContent=puanli.filter(o=>o.seviye==='YÜKSEK').length;
+   const bugun=new Date().toLocaleDateString('tr-TR');
+   document.getElementById('m-bugun').textContent=degerlendirmeler.filter(d=>{
+     if(!d.olusturuldu)return false;
+     const t=d.olusturuldu.toDate?d.olusturuldu.toDate():new Date(d.olusturuldu);
+     return t.toLocaleDateString('tr-TR')===bugun;
+   }).length;
+ 
+   // Onay bekleyen banner
+   const bekleyenler=kullanicilar.filter(k=>!k.onaylandi);
+   const onayBannerEl=document.getElementById('onayBekleyenBanner');
+   if(tamYetkiMi()&&bekleyenler.length){
+     onayBannerEl.innerHTML=`<div class="onay-banner">⏳ ${bekleyenler.length} yeni hesap onay bekliyor<button class="btn btn-kucuk btn-mavi" style="margin:0;padding:5px 12px" onclick="ekranGoster('yonetim')">İncele</button></div>`;
+   }else{onayBannerEl.innerHTML='';}
+ 
+   const kritikler=puanli.filter(o=>o.seviye==='KRİTİK');
+   document.getElementById('kritikBanner').innerHTML=kritikler.length
+     ?`<div class="uyari-banner">⚠️ <span>${kritikler.length} KRİTİK riskli öğrenci: <b>${kritikler.map(o=>xss(o.ad)).join(', ')}</b> — ivedilikle müdahale!</span></div>`:'' ;
+ 
+   const acil=puanli.filter(o=>o.seviye!=='DÜŞÜK').sort((a,b)=>b.puan-a.puan).slice(0,8);
+   document.getElementById('acilListe').innerHTML=acil.length
+     ?acil.map(o=>`<div class="ogrenci-satir" style="cursor:pointer" onclick="ogrenciDetay('${o.id}')">
+         <div class="avatar" style="background:${avatarRenk(o.seviye)};color:${avatarYazi(o.seviye)}">${xss(o.ad.charAt(0))}</div>
+         <div class="ogrenci-bilgi"><div class="ogrenci-ad">${ogrenciTamAdi(o)}</div><div class="ogrenci-alt">${xss(o.sinif||'—')} · ${trendIkon(o.trend)}</div></div>
+         <div class="puan-col"><div class="puan-sayi" style="color:${avatarYazi(o.seviye)}">${o.puan}</div><span class="rozet ${rozetSinifi(o.seviye)}">${o.seviye}</span></div>
+       </div>`).join('')
+-    :'<div style="text-align:center;padding:16px;color:var(--yazi2);font-size:13px">Risk taşıyan öğrenci bulunmuyor</div>';
++    :`<div style="text-align:center;padding:16px;color:var(--yazi2);font-size:13px">${secilenKullaniciFiltre?'Risk taşıyan öğrenci bulunmuyor':'Önce kullanıcı seçiniz'}</div>`;
+ 
+   const d={kritik:puanli.filter(o=>o.seviye==='KRİTİK').length,yuksek:puanli.filter(o=>o.seviye==='YÜKSEK').length,orta:puanli.filter(o=>o.seviye==='ORTA').length,dusuk:puanli.filter(o=>o.seviye==='DÜŞÜK').length};
+   const ctx=document.getElementById('dagilimGrafik');
+   if(dagilimChart)dagilimChart.destroy();
+   dagilimChart=new Chart(ctx,{type:'doughnut',data:{labels:['Kritik','Yüksek','Orta','Düşük'],datasets:[{data:[d.kritik,d.yuksek,d.orta,d.dusuk],backgroundColor:['#B71C1C','#bf360c','#E65100','#2E7D32'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},padding:10}}}}});
+ }
+ 
+ // ════════════════════════════════════════════
+ // KULLANICI FİLTRE SELECT (Anasayfa)
+ // ════════════════════════════════════════════
+ function kullaniciCbGuncelle(){
+   const sel=document.getElementById('kullaniciFiltreSel');
+   if(!sel)return;
+   const aktifKullanicilar=kullanicilar
+     .filter(k=>k.onaylandi!==false)
+-    .sort((a,b)=>(a.ad||'').localeCompare(b.ad||'','tr'));
+-  sel.innerHTML='<option value="">— Tümünü göster —</option>'+
+-    aktifKullanicilar.map(k=>`<option value="${k.id}">${xss(k.ad||k.email)}</option>`).join('');
++    .sort((a,b)=>kullaniciGorunenAd(a).localeCompare(kullaniciGorunenAd(b),'tr'));
++  sel.innerHTML='<option value="">— Kullanıcı seçiniz —</option><option value="__ALL__">— Tümünü göster —</option>'+
++    aktifKullanicilar.map(k=>`<option value="${k.id}">${xss(kullaniciGorunenAd(k))}</option>`).join('');
+   // Seçili değer varsa koru
+   if(secilenKullaniciFiltre) sel.value=secilenKullaniciFiltre;
+ }
+ function kullaniciSeldegisti(){
+   secilenKullaniciFiltre=document.getElementById('kullaniciFiltreSel').value;
+   anasayfaRenderEt();
+ }
+ 
+ // ════════════════════════════════════════════
+ // SINIF FİLTRE SELECT
+ // ════════════════════════════════════════════
+ function sinifCbGuncelle(){
+   const siniflar=[...new Set(ogrenciler.map(o=>o.sinif||'Sınıf Girilmemiş'))].sort((a,b)=>a.localeCompare(b,'tr'));
+   const ogrSel=document.getElementById('sinifFiltreSel');
+   if(ogrSel){
+-    ogrSel.innerHTML='<option value="">— Tüm sınıfları göster —</option>'+
++    ogrSel.innerHTML='<option value="">— Sınıf seçiniz —</option><option value="__ALL__">— Tüm sınıfları göster —</option>'+
+       siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
+     if(secilenSinifFiltre) ogrSel.value=secilenSinifFiltre;
+   }
+   // Toplu sınıf güncelleme select (Yönetim paneli)
+   const sel=document.getElementById('eskiSinifSec');
+   if(sel) sel.innerHTML='<option value="">— Seçin —</option>'+siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
+   // Form - sınıf seç
+   const formSel=document.getElementById('formSinif');
+   if(formSel){
+     const eski=formSel.value;
+     formSel.innerHTML='<option value="">— Önce sınıf seçin —</option>'+siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
+     if(eski) formSel.value=eski;
+   }
+   // Müdahale geçmiş sınıf filtresi
+   const mudSel=document.getElementById('mudGecmisSinif');
+   if(mudSel){
+     const eski2=mudSel.value;
+     mudSel.innerHTML='<option value="">— Sınıf seçin —</option>'+siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
+     if(eski2) mudSel.value=eski2;
+   }
+ }
+ function sinifSeldegisti(){
+   secilenSinifFiltre=document.getElementById('sinifFiltreSel').value;
+   ogrencileriRenderEt();
+ }
+@@ -847,51 +915,51 @@ function formSinifDegisti(){
+ function mudGecmisSinifDegisti(){
+   const sinif=document.getElementById('mudGecmisSinif').value;
+   const sel=document.getElementById('mudGecmisOgrenci');
+   sel.innerHTML='<option value="">— Öğrenci seçin —</option>';
+   if(!sinif){mudahaleGecmisiniRenderEt();return;}
+   const filtreliOgr=ogrenciler.filter(o=>(o.sinif||'Sınıf Girilmemiş')===sinif)
+     .sort((a,b)=>{const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;return na!==nb?na-nb:(a.ad||'').localeCompare(b.ad||'','tr');});
+   sel.innerHTML='<option value="">— Tüm sınıf —</option>'+
+     filtreliOgr.map(o=>`<option value="${o.id}">${o.okulNo?'['+xss(o.okulNo)+'] ':''} ${xss(o.ad)}</option>`).join('');
+   mudahaleGecmisiniRenderEt();
+ }
+ 
+ // ════════════════════════════════════════════
+ // ÖĞRENCİ LİSTESİ
+ // ════════════════════════════════════════════
+ function ogrencileriRenderEt(){
+   const arama=(document.getElementById('aramaInput')?.value||'').toLowerCase();
+   const filtre=document.getElementById('filtreSeviye')?.value||'';
+   const sinifFiltre=document.getElementById('sinifFiltreSel')?.value||secilenSinifFiltre;
+   const puanli=ogrenciler.map(o=>{
+     const son=ogrenciSonPuani(o.id);
+     return{...o,...son,trend:trendHesapla(o.id)};
+   }).filter(o=>{
+     if(arama&&!((o.ad||'').toLowerCase().includes(arama)||(o.okulNo||'').includes(arama)))return false;
+     if(filtre&&o.seviye!==filtre)return false;
+-    if(sinifFiltre){
++    if(sinifFiltre&&sinifFiltre!=='__ALL__'){
+       const s=o.sinif||'Sınıf Girilmemiş';
+       if(s!==sinifFiltre)return false;
+     }
+     return true;
+   }).sort((a,b)=>{
+     const sa=a.sinif||'zzz';const sb=b.sinif||'zzz';
+     if(sa!==sb)return sa.localeCompare(sb,'tr');
+     const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;
+     if(na!==nb)return na-nb;
+     return(a.ad||'').localeCompare(b.ad||'','tr');
+   });
+ 
+   const wrap=document.getElementById('ogrenciListesiWrap');
+   if(!puanli.length){
+     wrap.innerHTML='<div class="kart" style="text-align:center;padding:20px;color:var(--yazi2);font-size:13px">Öğrenci bulunamadı</div>';
+     return;
+   }
+ 
+   const siniflar={};
+   puanli.forEach(o=>{const s=o.sinif||'Sınıf Girilmemiş';if(!siniflar[s])siniflar[s]=[];siniflar[s].push(o);});
+ 
+   wrap.innerHTML=Object.entries(siniflar).map(([sinifAdi,grup])=>{
+     const kritikS=grup.filter(o=>o.seviye==='KRİTİK').length;
+     const sinifRenk=kritikS>0?'var(--kirmizi-ac)':grup.some(o=>o.seviye==='YÜKSEK')?'var(--sari-ac)':'var(--mavi-cok-ac)';
+     return`<div class="sinif-grup">
+@@ -959,127 +1027,127 @@ function ogrenciDetay(id){
+   // Geçmiş
+   const gecEl=document.getElementById('detayGozlemler');
+   if(!gorDev.length){gecEl.innerHTML='<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Henüz değerlendirme yapılmamış</div>';return;}
+   gecEl.innerHTML=gorDev.slice().reverse().slice(0,6).map(d=>{
+     const tarih=d.olusturuldu?.toDate?d.olusturuldu.toDate().toLocaleDateString('tr-TR'):'—';
+     const varlar=d.kriterSonuclari?Object.entries(KRITERLER).flatMap(([bk,bolum])=>bolum.kriterler.filter(k=>d.kriterSonuclari[k.id]?.deger==='var').map(k=>`<span class="gd ${bolum.tipi==='koruyucu'?'gd-olumlu':'gd-var'}">${xss(k.metin.substring(0,28))}…</span>`)).join(''):'';
+     return`<div class="gozlem-satir">
+       <div class="gozlem-tarih">${tarih} · ${xss(d.degerlendiren||'—')}</div>
+       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+         <span style="font-size:18px;font-weight:900;color:${avatarYazi(d.riskSeviyesi||'DÜŞÜK')}">${d.puan||0}</span>
+         <span class="rozet ${rozetSinifi(d.riskSeviyesi||'DÜŞÜK')}">${d.riskSeviyesi||'DÜŞÜK'}</span>
+       </div>
+       <div class="gozlem-degerler">${varlar}</div>
+       ${d.sonuc?`<div style="font-size:12px;color:var(--yazi2);font-style:italic;margin-top:4px">"${xss(d.sonuc.slice(0,120))}"</div>`:''}
+     </div>`;
+   }).join('');
+   document.getElementById('detayOverlay').classList.add('aktif');
+ }
+ function mudahaleEkleDetay(){modalKapat('detayOverlay');ekranGoster('mudahale');}
+ 
+ // ════════════════════════════════════════════
+ // ÖĞRENCİ CRUD
+ // ════════════════════════════════════════════
+ function ogrenciEkleAc(){document.getElementById('ekleOverlay').classList.add('aktif');}
+ function ogrenciEkle(){
+-  const ad=document.getElementById('yeniAd').value.trim();
++  const ad=toTitleCase(document.getElementById('yeniAd').value.trim());
+   if(!ad){toast('Ad girin');return;}
+   db.collection(KOL.ogrenciler).add({
+     okulNo:document.getElementById('yeniOkulNo').value.trim(),
+-    ad,sinif:document.getElementById('yeniSinif').value.trim(),
++    ad,sinif:formatSinifSube(document.getElementById('yeniSinif').value.trim()),
+     devamsizlik:document.getElementById('yeniDevamsizlik').value.trim(),
+-    veli:document.getElementById('yeniVeli').value.trim(),
++    veli:toTitleCase(document.getElementById('yeniVeli').value.trim()),
+     telefon:document.getElementById('yeniTelefon').value.trim(),
+     ekleyenUid:mevcutKullanici?.uid,
+-    ekleyen:mevcutAd||mevcutKullanici?.email,
++    ekleyen:aktifKullaniciAdi(),
+     olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
+   }).then(()=>{
+     toast('✓ '+xss(ad)+' eklendi');
+     modalKapat('ekleOverlay');
+     ['yeniOkulNo','yeniAd','yeniSinif','yeniDevamsizlik','yeniVeli','yeniTelefon'].forEach(i=>document.getElementById(i).value='');
+   }).catch(e=>toast('Hata: '+xss(e.message)));
+ }
+ function ogrenciDuzenleAc(id){
+   const o=ogrenciler.find(s=>s.id===id);if(!o)return;
+   duzenleId=id;
+   document.getElementById('duzOkulNo').value=o.okulNo||'';
+   document.getElementById('duzAd').value=o.ad||'';
+   document.getElementById('duzSinif').value=o.sinif||'';
+   document.getElementById('duzDevamsizlik').value=o.devamsizlik||'';
+   document.getElementById('duzVeli').value=o.veli||'';
+   document.getElementById('duzTelefon').value=o.telefon||'';
+   document.getElementById('duzenleOverlay').classList.add('aktif');
+ }
+ function ogrenciDuzenleKaydet(){
+   if(!duzenleId)return;
+-  const ad=document.getElementById('duzAd').value.trim();
++  const ad=toTitleCase(document.getElementById('duzAd').value.trim());
+   if(!ad){toast('Ad boş olamaz');return;}
+   db.collection(KOL.ogrenciler).doc(duzenleId).update({
+     okulNo:document.getElementById('duzOkulNo').value.trim(),
+-    ad,sinif:document.getElementById('duzSinif').value.trim(),
++    ad,sinif:formatSinifSube(document.getElementById('duzSinif').value.trim()),
+     devamsizlik:document.getElementById('duzDevamsizlik').value.trim(),
+-    veli:document.getElementById('duzVeli').value.trim(),
++    veli:toTitleCase(document.getElementById('duzVeli').value.trim()),
+     telefon:document.getElementById('duzTelefon').value.trim(),
+     guncelleyen:mevcutAd,guncellenmeTarihi:firebase.firestore.FieldValue.serverTimestamp()
+   }).then(()=>{toast('✓ Güncellendi');modalKapat('duzenleOverlay');duzenleId=null;})
+     .catch(e=>toast('Hata: '+xss(e.message)));
+ }
+ function ogrenciSilOnayla(id){
+   const o=ogrenciler.find(s=>s.id===id);if(!o)return;
+   if(!confirm('"'+o.ad+'" silinsin mi?\nBu işlem geri alınamaz.'))return;
+   db.collection(KOL.ogrenciler).doc(id).delete().then(()=>toast('🗑 '+xss(o.ad)+' silindi')).catch(e=>toast('Hata: '+xss(e.message)));
+ }
+ 
+ // Madde 9: Toplu sınıf güncelle
+ function topluSinifGuncelle(){
+   const eski=document.getElementById('eskiSinifSec').value.trim();
+   const yeni=document.getElementById('yeniSinifAdi').value.trim();
+   if(!eski||!yeni){toast('Her iki alanı da doldurun');return;}
+   if(eski===yeni){toast('Sınıf adları aynı');return;}
+   const etkilenenler=ogrenciler.filter(o=>(o.sinif||'Sınıf Girilmemiş')===eski);
+   if(!etkilenenler.length){toast('Bu sınıfta öğrenci bulunamadı');return;}
+   if(!confirm(`"${eski}" sınıfındaki ${etkilenenler.length} öğrenci "${yeni}" olarak güncellensin mi?`))return;
+   const batch=db.batch();
+   etkilenenler.forEach(o=>batch.update(db.collection(KOL.ogrenciler).doc(o.id),{sinif:yeni}));
+   batch.commit().then(()=>toast('✓ '+etkilenenler.length+' öğrenci güncellendi')).catch(e=>toast('Hata: '+xss(e.message)));
+ }
+ 
+ // ════════════════════════════════════════════
+ // MÜDAHALE
+ // ════════════════════════════════════════════
+ function mudahaleKaydet(){
+   const ogrenciId=document.getElementById('mudahaleOgrenci').value;
+   if(!ogrenciId){toast('Öğrenci seçin');return;}
+   const son=ogrenciSonPuani(ogrenciId);
+   db.collection(KOL.mudahaleler).add({
+     ogrenciId,
+     islem:document.getElementById('mudahaleIslem').value,
+-    sorumlu:document.getElementById('mudahaleSorumlu').value.trim()||mevcutAd||'Bilinmiyor',
+-    takip:document.getElementById('mudahaleTakip').value.trim(),
++    sorumlu:toTitleCase(document.getElementById('mudahaleSorumlu').value.trim())||aktifKullaniciAdi(),
++    takip:formatTarihNokta(document.getElementById('mudahaleTakip').value.trim()),
+     not:document.getElementById('mudahaleNot').value.trim(),
+     riskPuani:son.puan,riskSeviyesi:son.seviye,
+-    kullanici:mevcutAd||mevcutKullanici?.email,
++    kullanici:aktifKullaniciAdi(),
+     kullaniciUid:mevcutKullanici?.uid,
+     olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
+   }).then(()=>{
+     toast('✓ Müdahale kaydedildi');
+     ['mudahaleSorumlu','mudahaleTakip','mudahaleNot'].forEach(i=>document.getElementById(i).value='');
+   }).catch(e=>toast('Hata: '+xss(e.message)));
+ }
+ function mudahaleSil(id){
+   if(!mudahaleYetki()){toast('Bu işlem için yetkiniz yok');return;}
+   if(!confirm('Bu müdahale kaydı silinsin mi?'))return;
+   db.collection(KOL.mudahaleler).doc(id).delete().then(()=>toast('🗑 Müdahale silindi')).catch(e=>toast('Hata: '+xss(e.message)));
+ }
+ function mudahaleGecmisiniRenderEt(){
+   const el=document.getElementById('mudahaleGecmisi');
+   const sinif=document.getElementById('mudGecmisSinif')?.value||'';
+   const ogrenciId=document.getElementById('mudGecmisOgrenci')?.value||'';
+ 
+   // Hiçbir seçim yapılmamışsa boş mesaj göster
+   if(!sinif&&!ogrenciId){
+     el.innerHTML='<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Sınıf veya öğrenci seçin.</div>';
+     return;
+   }
+ 
+   // Filtrele
+   let liste=mudahaleler;
+@@ -1105,111 +1173,121 @@ function mudahaleGecmisiniRenderEt(){
+   }).join('');
+ }
+ 
+ // ════════════════════════════════════════════
+ // SELECT GÜNCELLE
+ // ════════════════════════════════════════════
+ function selectleriGuncelle(){
+   const sortedOgr=[...ogrenciler].sort((a,b)=>{
+     const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;
+     return na!==nb?na-nb:(a.ad||'').localeCompare(b.ad||'','tr');
+   });
+   const opts=sortedOgr.map(o=>`<option value="${o.id}">${o.okulNo?'['+xss(o.okulNo)+'] ':''} ${xss(o.ad)}${o.sinif?' ('+xss(o.sinif)+')':''}</option>`).join('');
+   const bos='<option value="">— Öğrenci seçin —</option>';
+   document.getElementById('formOgrenci').innerHTML=bos+opts;
+   document.getElementById('mudahaleOgrenci').innerHTML=bos+opts;
+ }
+ 
+ // ════════════════════════════════════════════
+ // YÖNETİM PANELİ
+ // ════════════════════════════════════════════
+ function yonetimPanelRenderEt(){
+   // Onay bekleyenler
+   const bekleyenler=kullanicilar.filter(k=>!k.onaylandi);
+   const onayEl=document.getElementById('onayListesi');
+   onayEl.innerHTML=bekleyenler.length
+-    ?bekleyenler.map(k=>`<div class="kullanici-satir">
++      ?bekleyenler.map(k=>`<div class="kullanici-satir">
+         <div style="flex:1">
+-          <div style="font-weight:700;font-size:14px">${xss(k.ad||'—')}</div>
+-          <div style="font-size:12px;color:var(--yazi2)">${xss(k.email||'—')} · ${xss(k.rol||'—')}</div>
++          <div style="font-weight:700;font-size:14px">${xss(kullaniciGorunenAd(k))}</div>
++          <div style="font-size:12px;color:var(--yazi2)">${xss(k.rol||'—')}</div>
+         </div>
+         <button class="btn btn-yesil btn-kucuk" style="margin:0" onclick="kullaniciOnayla('${k.id}')">✓ Onayla</button>
+         <button class="islem-btn sil-btn" onclick="kullaniciSil('${k.id}')">🗑</button>
+       </div>`).join('')
+     :'<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Onay bekleyen hesap yok</div>';
+ 
+   // Tüm kullanıcılar
+   const yonetimEl=document.getElementById('kullaniciYonetimListesi');
+-  const aktifler=kullanicilar.filter(k=>k.onaylandi!==false);
++  const yonSel=document.getElementById('kullaniciYonetimSec');
++  const aktifler=kullanicilar.filter(k=>k.onaylandi!==false)
++    .sort((a,b)=>kullaniciGorunenAd(a).localeCompare(kullaniciGorunenAd(b),'tr'));
++  if(yonSel){
++    yonSel.innerHTML='<option value="">— Tüm kullanıcılar —</option>'+aktifler.map(k=>`<option value="${k.id}">${xss(kullaniciGorunenAd(k))}</option>`).join('');
++    if(secilenYonetimKullanici) yonSel.value=secilenYonetimKullanici;
++  }
+   yonetimEl.innerHTML=aktifler.length
+-    ?aktifler.map(k=>{
++    ?aktifler.filter(k=>!secilenYonetimKullanici||k.id===secilenYonetimKullanici).map(k=>{
+       const rolEt={ogretmen:'Öğretmen',rehberlik:'Rehberlik',mudur:'Müdür',admin:'Admin'};
+       return`<div class="kullanici-satir">
+         <div style="flex:1">
+-          <div style="font-weight:700;font-size:14px">${xss(k.ad||'—')}</div>
+-          <div style="font-size:12px;color:var(--yazi2)">${xss(k.email||'—')} · <span class="rozet r-dusuk" style="font-size:10px">${rolEt[k.rol]||xss(k.rol)||'—'}</span></div>
++          <div style="font-weight:700;font-size:14px">${xss(kullaniciGorunenAd(k))}</div>
++          <div style="font-size:12px;color:var(--yazi2)"><span class="rozet r-dusuk" style="font-size:10px">${rolEt[k.rol]||xss(k.rol)||'—'}</span></div>
+         </div>
+         <button class="islem-btn duzenle-btn" onclick="kullaniciDuzenleAc('${k.id}')" title="Düzenle">✏️</button>
+-        ${k.email!==ADMIN_EMAIL?`<button class="islem-btn sil-btn" onclick="kullaniciSil('${k.id}')" title="Sil">🗑</button>`:''}
++        ${k.rol!=='admin'?`<button class="islem-btn sil-btn" onclick="kullaniciSil('${k.id}')" title="Sil">🗑</button>`:''}
+       </div>`;
+     }).join('')
+     :'<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Kayıtlı kullanıcı yok</div>';
+ }
++function kullaniciYonetimSecDegisti(){
++  secilenYonetimKullanici=document.getElementById('kullaniciYonetimSec')?.value||'';
++  yonetimPanelRenderEt();
++}
+ 
+ function kullaniciOnayla(uid){
+   db.collection(KOL.kullanicilar).doc(uid).update({onaylandi:true})
+     .then(()=>toast('✓ Hesap onaylandı')).catch(e=>toast('Hata: '+xss(e.message)));
+ }
+ function kullaniciSil(uid){
+   if(!confirm('Bu kullanıcı Firestore\'dan silinsin mi?'))return;
+   db.collection(KOL.kullanicilar).doc(uid).delete()
+     .then(()=>toast('🗑 Kullanıcı silindi')).catch(e=>toast('Hata: '+xss(e.message)));
+ }
+ function kullaniciDuzenleAc(uid){
+   const k=kullanicilar.find(u=>u.id===uid);if(!k)return;
+   kdUid=uid;
+   document.getElementById('kdAd').value=k.ad||'';
+   document.getElementById('kdRol').value=k.rol||'ogretmen';
+   document.getElementById('kullaniciDuzenleOverlay').classList.add('aktif');
+ }
+ function kullaniciDuzenleKaydet(){
+   if(!kdUid)return;
+-  const ad=document.getElementById('kdAd').value.trim();
++  const ad=toTitleCase(document.getElementById('kdAd').value.trim());
+   if(!ad){toast('Ad boş olamaz');return;}
+   db.collection(KOL.kullanicilar).doc(kdUid).update({
+     ad,rol:document.getElementById('kdRol').value
+   }).then(()=>{toast('✓ Kullanıcı güncellendi');modalKapat('kullaniciDuzenleOverlay');kdUid=null;})
+     .catch(e=>toast('Hata: '+xss(e.message)));
+ }
+ 
+ // ════════════════════════════════════════════
+ // YAZDIR — YENİ PENCERE YAKLAŞIMI (Print hatası fix)
+ // ════════════════════════════════════════════
+ // Madde 7: Müdür adını bul
+ function mudurAdiBul(){
+   const m=kullanicilar.find(k=>k.rol==='mudur'||k.rol==='admin');
+-  return m?xss(m.ad||m.email):'';
++  return m?xss(kullaniciGorunenAd(m)):'';
+ }
+ 
+ // Madde 1-2: Print CSS inline (CSS variables yok, browser header/footer kaldırılacak)
+ const A4_CSS=`
+ *{box-sizing:border-box;margin:0;padding:0}
+ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#000;background:#fff;padding:10mm 12mm}
+ @page{size:A4 portrait;margin:0}
+ @media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+ .yazdir-sayfa{page-break-after:always;page-break-inside:avoid;margin-bottom:20px}
+ .yazdir-sayfa:last-child{page-break-after:auto}
+ .a4-form{width:100%;font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff}
+ .a4-bilgi-row{display:flex;gap:16px;margin-bottom:8px;border:1px solid #ddd;border-radius:4px;padding:6px 10px;background:#f8f8f8;flex-wrap:wrap}
+ .a4-bilgi-item{flex:1;min-width:120px;font-size:11px}
+ .a4-bilgi-item span{font-weight:700}
+ .a4-bolum-baslik{font-size:11px;font-weight:800;color:#fff;padding:5px 10px;border-radius:3px;margin:8px 0 4px}
+ .a4-b1{background:#1e88e5}.a4-b2{background:#6A1B9A}.a4-b3{background:#E65100}.a4-b4{background:#B71C1C}.a4-b5{background:#2E7D32}
+ .a4-tablo{width:100%;border-collapse:collapse;margin-bottom:6px}
+ .a4-tablo th{background:#eceff1;padding:5px 8px;text-align:left;font-size:10px;font-weight:700;border:1px solid #ddd}
+ .a4-tablo td{padding:5px 8px;border:1px solid #ddd;font-size:10px;vertical-align:top}
+ .a4-tablo tr:nth-child(even) td{background:#fafafa}
+ .a4-deger-var{color:#B71C1C;font-weight:700}
+ .a4-deger-yok{color:#2E7D32;font-weight:700}
+ .a4-deger-olumlu{color:#1565C0;font-weight:700}
+ .a4-puan-kutu{display:flex;align-items:center;gap:12px;border:2px solid #ddd;border-radius:6px;padding:8px 12px;margin:8px 0;background:#f8f8f8}
+ .a4-puan-sayi{font-size:28px;font-weight:900}
+@@ -1338,118 +1416,119 @@ window.onload=function(){
+     alan.id='_yazdir_fallback';alan.innerHTML=icerik;
+     document.body.appendChild(alan);
+     window.print();
+     setTimeout(()=>document.body.removeChild(alan),2000);
+   }
+ }
+ 
+ // ════════════════════════════════════════════
+ // AUTH
+ // ════════════════════════════════════════════
+ function girisSekme(s){
+   document.getElementById('s-giris').classList.toggle('aktif',s==='giris');
+   document.getElementById('s-kayit').classList.toggle('aktif',s==='kayit');
+   document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('aktif',(i===0&&s==='giris')||(i===1&&s==='kayit')));
+ }
+ function girisYap(){
+   if(!rateLimitGiris())return;
+   const e=document.getElementById('email').value.trim();
+   const s=document.getElementById('sifre').value;
+   if(!e||!s){toast('Bilgileri doldurun');return;}
+   auth.signInWithEmailAndPassword(e,s)
+     .then(()=>{_loginDeneme=0;})
+     .catch(err=>{rateLimitArtir();toast('Hata: '+turkceHata(err.code));});
+ }
+ function kayitOl(){
+-  const ad=document.getElementById('kayitAd').value.trim();
++  const ad=toTitleCase(document.getElementById('kayitAd').value.trim());
+   const e=document.getElementById('kayitEmail').value.trim();
+   const s=document.getElementById('kayitSifre').value;
+   const rol=document.getElementById('kayitRol').value;
+   if(!ad||!e||!s){toast('Tüm alanları doldurun');return;}
+   const gercekRol=e===ADMIN_EMAIL?'admin':rol;
+   const onaylandi=e===ADMIN_EMAIL;
+   auth.createUserWithEmailAndPassword(e,s)
+     .then(r=>db.collection(KOL.kullanicilar).doc(r.user.uid).set({
+-      ad,email:e,rol:gercekRol,onaylandi,
++      ad:gercekRol==='admin'?ADMIN_GORUNEN_AD:ad,email:e,rol:gercekRol,onaylandi,
+       olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
+     }))
+     .then(()=>{
+       if(onaylandi)toast('✓ Kayıt başarılı!');
+       else toast('Kaydınız alındı. Yönetici onayı bekleniyor.');
+     })
+     .catch(err=>toast('Hata: '+turkceHata(err.code)));
+ }
+ function cikisYap(){auth.signOut();}
+ function turkceHata(k){
+   const m={'auth/user-not-found':'Kullanıcı bulunamadı','auth/wrong-password':'Şifre hatalı','auth/invalid-email':'Geçersiz e-posta','auth/email-already-in-use':'Bu e-posta zaten kayıtlı','auth/weak-password':'Şifre en az 6 karakter olmalı','auth/invalid-credential':'E-posta veya şifre hatalı','auth/too-many-requests':'Çok fazla deneme, lütfen bekleyin'};
+   return m[k]||k;
+ }
+ 
+ function gosterGiris(){
+   document.getElementById('girisEkrani').style.display='flex';
+   document.getElementById('onayEkrani').style.display='none';
+   document.getElementById('anaUygulama').style.display='none';
+   document.getElementById('altMenu').style.display='none';
+ }
+ function gosterOnayBekliyor(mesaj){
+   document.getElementById('girisEkrani').style.display='none';
+   document.getElementById('onayEkrani').style.display='flex';
+   document.getElementById('anaUygulama').style.display='none';
+   document.getElementById('altMenu').style.display='none';
+   document.getElementById('onayMesaj').textContent=mesaj;
+ }
+ function gosterUygulama(){
+   document.getElementById('girisEkrani').style.display='none';
+   document.getElementById('onayEkrani').style.display='none';
+   document.getElementById('anaUygulama').style.display='block';
+   document.getElementById('altMenu').style.display='flex';
+ }
+ 
+ auth.onAuthStateChanged(kullanici=>{
+   if(kullanici){
+     mevcutKullanici=kullanici;
+     db.collection(KOL.kullanicilar).doc(kullanici.uid).get().then(doc=>{
+       // Admin email: Firestore'daki gerçek adı kullan (ör. "Mahir Han"),
+       // arka planda admin yetkisiyle çalış, arayüzde sadece adı görünsün
+       if(kullanici.email===ADMIN_EMAIL){
+-        const ad=doc.exists?(doc.data().ad||kullanici.email):kullanici.email;
++        const ad=doc.exists?(doc.data().ad||ADMIN_GORUNEN_AD):ADMIN_GORUNEN_AD;
+         baslatUygulama('admin',ad);return;
+       }
+       if(!doc.exists){gosterOnayBekliyor('Hesabınız bulunamadı veya silinmiş olabilir.');return;}
+       const d=doc.data();
+       if(!d.onaylandi){gosterOnayBekliyor('Hesabınız yönetici onayı bekliyor. Onaylandıktan sonra giriş yapabilirsiniz.');return;}
+-      baslatUygulama(d.rol,d.ad||kullanici.email);
++      baslatUygulama(d.rol,toTitleCase(d.ad||kullanici.email));
+     }).catch(()=>gosterOnayBekliyor('Hesap bilgileri alınamadı. Lütfen tekrar deneyin.'));
+   }else{
+     mevcutKullanici=null;mevcutRol=null;mevcutAd=null;adminMi=false;
+     ogrenciler=[];degerlendirmeler=[];mudahaleler=[];kullanicilar=[];
+     gosterGiris();
+   }
+ });
+ 
+ function baslatUygulama(rol,ad){
+   mevcutRol=rol;mevcutAd=ad;adminMi=(rol==='admin');
++  tumSelectlereAramaEkle();
+   const rolEt={ogretmen:'Öğretmen',rehberlik:'Rehberlik Uzmanı',mudur:'Müdür / İdare',admin:'Öğretmen'};
+   // Admin perde arkasında çalışır; navbar'da gerçek adı + normal rol etiketi görünür
+   document.getElementById('navRol').textContent=(rolEt[rol]||rol)+' — '+xss(ad);
+   // ADMİN rozeti sadece admin kullanıcının kendi ekranında görünür
+   document.getElementById('adminRozet').style.display=adminMi?'inline-block':'none';
+   document.getElementById('formDegerlendiren').value=ad;
+   // Yönetim butonu: admin, mudur, rehberlik için göster
+   document.getElementById('bn-yonetim').style.display=tamYetkiMi()||adminMi?'flex':'none';
+   gosterUygulama();
+   formuRenderEt();
+   verileriYukle();
+ }
+ 
+ // ════════════════════════════════════════════
+ // VERİ YÜKLEME
+ // ════════════════════════════════════════════
+ function verileriYukle(){
+   db.collection(KOL.ogrenciler).onSnapshot(snap=>{
+     ogrenciler=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+       const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;
+       if(na!==nb)return na-nb;
+       return(a.ad||'').localeCompare(b.ad||'','tr');
+     });
+     sinifCbGuncelle();selectleriGuncelle();ogrencileriRenderEt();anasayfaRenderEt();
+     if(mevcutAd)document.getElementById('formDegerlendiren').value=mevcutAd;
+@@ -1470,28 +1549,32 @@ function verileriYukle(){
+     kullaniciCbGuncelle();
+     if(tamYetkiMi())yonetimPanelRenderEt();
+     anasayfaRenderEt();
+   },err=>console.error(err));
+ }
+ 
+ // ════════════════════════════════════════════
+ // NAVİGASYON
+ // ════════════════════════════════════════════
+ function ekranGoster(id){
+   document.querySelectorAll('.ekran').forEach(e=>e.classList.remove('aktif'));
+   document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('aktif'));
+   document.getElementById('ekran-'+id).classList.add('aktif');
+   document.getElementById('bn-'+id)?.classList.add('aktif');
+   window.scrollTo(0,0);
+   if(id==='ogrenciler')ogrencileriRenderEt();
+   if(id==='mudahale')mudahaleGecmisiniRenderEt();
+   if(id==='yonetim')yonetimPanelRenderEt();
+ }
+ function modalKapat(id){document.getElementById(id).classList.remove('aktif');}
+ function toast(mesaj){
+   const t=document.getElementById('toast');
+   t.textContent=mesaj;t.classList.add('goster');
+   setTimeout(()=>t.classList.remove('goster'),2800);
+ }
++
++document.getElementById('mudahaleTakip')?.addEventListener('input',e=>{
++  e.target.value=formatTarihNokta(e.target.value);
++});
+ </script>
+ </body>
+ </html>
