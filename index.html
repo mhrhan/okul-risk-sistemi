@@ -104,7 +104,6 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
 .arama-row{display:flex;gap:8px;margin-bottom:10px}
 .arama-row input{flex:1}
 .arama-row select{width:auto;min-width:85px}
-.select-arama{width:100%;padding:9px 11px;border:1.5px solid var(--gri3);border-radius:var(--radius-sm);font-size:13px;margin-bottom:6px}
 .cb-alani{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .cb-etiket{display:flex;align-items:center;gap:5px;background:var(--gri2);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;user-select:none;border:1.5px solid transparent;transition:all .15s}
 .cb-etiket:has(input:checked){background:var(--mavi-cok-ac);border-color:var(--mavi-ac);color:var(--mavi)}
@@ -147,7 +146,6 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
       <div class="form-grup"><label>E-posta</label><input type="email" id="kayitEmail" maxlength="100"></div>
       <div class="form-grup"><label>Şifre</label><input type="password" id="kayitSifre" maxlength="100" placeholder="En az 6 karakter"></div>
       <div class="form-grup"><label>Rolünüz</label>
-        <input type="text" class="select-arama" id="kayitRolAra" placeholder="🔎 Rol ara..." oninput="selectAramaUygula('kayitRolAra','kayitRol')">
         <select id="kayitRol">
           <option value="ogretmen">Sınıf / Branş Öğretmeni</option>
           <option value="rehberlik">Rehberlik Uzmanı (PDR)</option>
@@ -193,10 +191,8 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
     <!-- Kullanıcı Filtresi — açılır menü -->
     <div class="kart" style="padding:12px 14px;margin-bottom:14px">
       <div style="font-size:11px;font-weight:700;color:var(--yazi2);margin-bottom:6px">👤 KULLANICI FİLTRESİ</div>
-      <input type="text" class="select-arama" id="kullaniciFiltreAra" placeholder="🔎 Kullanıcı ara..." oninput="selectAramaUygula('kullaniciFiltreAra','kullaniciFiltreSel')">
       <select id="kullaniciFiltreSel" onchange="kullaniciSeldegisti()" style="width:100%">
         <option value="">— Tümünü göster —</option>
-        <option value="">— Kullanıcı seçiniz —</option>
       </select>
     </div>
     <div class="kart">
@@ -228,10 +224,8 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
         </select>
       </div>
       <div style="font-size:11px;font-weight:700;color:var(--yazi2);margin-bottom:6px">SINIF FİLTRESİ</div>
-      <input type="text" class="select-arama" id="sinifFiltreAra" placeholder="🔎 Sınıf ara..." oninput="selectAramaUygula('sinifFiltreAra','sinifFiltreSel')">
       <select id="sinifFiltreSel" onchange="sinifSeldegisti()" style="width:100%">
         <option value="">— Tüm sınıfları göster —</option>
-        <option value="">— Sınıf seçiniz —</option>
       </select>
     </div>
     <div id="ogrenciListesiWrap"><div class="yukleniyor">Yükleniyor...</div></div>
@@ -244,12 +238,10 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
       <div class="bilgi-banner">ℹ️ Bu form bir tanı aracı değildir. Gözlemler, riskleri somutlaştırmak ve üzerinde çalışmak içindir.</div>
       <div class="form-grup">
         <label>Sınıf seç</label>
-        <input type="text" class="select-arama" id="formSinifAra" placeholder="🔎 Sınıf ara..." oninput="selectAramaUygula('formSinifAra','formSinif')">
         <select id="formSinif" onchange="formSinifDegisti()"><option value="">— Önce sınıf seçin —</option></select>
       </div>
       <div class="form-grup">
         <label>Öğrenci seç</label>
-        <input type="text" class="select-arama" id="formOgrAra" placeholder="🔎 Öğrenci ara..." oninput="selectAramaUygula('formOgrAra','formOgrenci')">
         <select id="formOgrenci" onchange="formOgrenciDegisti()"><option value="">— Öğrenci seçin —</option></select>
       </div>
       <div class="form-grup">
@@ -290,7 +282,6 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
     <div class="kart">
       <div class="kart-baslik"><span class="kart-baslik-sol">🛡️ Müdahale Kaydı</span></div>
       <div class="form-grup"><label>Öğrenci</label><select id="mudahaleOgrenci"><option value="">— Öğrenci seçin —</option></select></div>
-      <div class="form-grup"><label>Öğrenci</label><input type="text" class="select-arama" id="mudahaleOgrAra" placeholder="🔎 Öğrenci ara..." oninput="selectAramaUygula('mudahaleOgrAra','mudahaleOgrenci')"><select id="mudahaleOgrenci"><option value="">— Öğrenci seçin —</option></select></div>
       <div class="form-grup"><label>Yapılan işlem</label>
         <select id="mudahaleIslem">
           <option value="Sadece izlemeye alındı">Sadece izleme</option>
@@ -305,18 +296,15 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
       </div>
       <div class="form-grup"><label>Sorumlu kişi</label><input type="text" id="mudahaleSorumlu" maxlength="60"></div>
       <div class="form-grup"><label>Takip tarihi</label><input type="text" id="mudahaleTakip" maxlength="40"></div>
-      <div class="form-grup"><label>Takip tarihi</label><input type="text" id="mudahaleTakip" maxlength="40" placeholder="01.01.2026"></div>
       <div class="form-grup"><label>Not</label><textarea id="mudahaleNot" maxlength="500"></textarea></div>
       <button class="btn btn-mavi" onclick="mudahaleKaydet()">✓ Müdahaleyi Kaydet</button>
     </div>
     <div class="kart">
       <div class="kart-baslik"><span class="kart-baslik-sol">📋 Müdahale Geçmişi</span></div>
       <div style="display:flex;gap:8px;margin-bottom:12px">
-        <input type="text" class="select-arama" id="mudGecmisSinifAra" placeholder="🔎 Sınıf ara..." oninput="selectAramaUygula('mudGecmisSinifAra','mudGecmisSinif')" style="flex:1">
         <select id="mudGecmisSinif" onchange="mudGecmisSinifDegisti()" style="flex:1">
           <option value="">— Sınıf seçin —</option>
         </select>
-        <input type="text" class="select-arama" id="mudGecmisOgrAra" placeholder="🔎 Öğrenci ara..." oninput="selectAramaUygula('mudGecmisOgrAra','mudGecmisOgrenci')" style="flex:1">
         <select id="mudGecmisOgrenci" onchange="mudahaleGecmisiniRenderEt()" style="flex:1">
           <option value="">— Öğrenci seçin —</option>
         </select>
@@ -335,10 +323,6 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
     <!-- Kullanıcı Yönetimi -->
     <div class="kart">
       <div class="kart-baslik"><span class="kart-baslik-sol">👥 Kullanıcı Yönetimi</span></div>
-      <input type="text" class="select-arama" id="kullaniciYonetimAra" placeholder="🔎 Kullanıcı ara..." oninput="selectAramaUygula('kullaniciYonetimAra','kullaniciYonetimSec')">
-      <select id="kullaniciYonetimSec" onchange="kullaniciYonetimSecDegisti()">
-        <option value="">— Tüm kullanıcılar —</option>
-      </select>
       <div id="kullaniciYonetimListesi"><div class="yukleniyor">Yükleniyor...</div></div>
     </div>
     <!-- Toplu Sınıf Güncelleme -->
@@ -346,7 +330,6 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
       <div class="kart-baslik"><span class="kart-baslik-sol">🏫 Toplu Sınıf Güncelleme</span></div>
       <div class="bilgi-banner">Bir sınıfın tüm öğrencilerini yeni bir sınıfa taşımak için kullanın. (örn: 9-A → 10-A)</div>
       <div class="form-grup"><label>Mevcut Sınıf Adı</label>
-        <input type="text" class="select-arama" id="eskiSinifAra" placeholder="🔎 Sınıf ara..." oninput="selectAramaUygula('eskiSinifAra','eskiSinifSec')">
         <select id="eskiSinifSec"><option value="">— Seçin —</option></select>
       </div>
       <div class="form-grup"><label>Yeni Sınıf Adı</label>
@@ -372,7 +355,36 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
     <div class="modal-baslik"><span id="detayBaslik">Öğrenci Detayı</span><button class="kapat-btn" onclick="modalKapat('detayOverlay')">✕</button></div>
     <div class="modal-icerik">
       <div id="detayIcerik"></div>
-@@ -388,122 +401,174 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
+      <div class="kart-baslik" style="margin-top:14px"><span class="kart-baslik-sol">📈 Risk Grafiği</span></div>
+      <div class="grafik-alan"><canvas id="riskGrafik"></canvas></div>
+      <div id="kritikYukselisUyari"></div>
+      <div class="kart-baslik" style="margin-top:14px"><span class="kart-baslik-sol">📝 Değerlendirme Geçmişi</span></div>
+      <div id="detayGozlemler"></div>
+      <div class="btn-satir" style="margin-top:12px">
+        <button class="btn btn-mavi" onclick="mudahaleEkleDetay()">+ Müdahale Ekle</button>
+        <button class="btn btn-yesil" onclick="tekliYazdirDetay()">🖨 Yazdır</button>
+      </div>
+      <button class="btn btn-beyaz" onclick="modalKapat('detayOverlay')">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<!-- EKLE MODAL -->
+<div class="overlay" id="ekleOverlay">
+  <div class="modal">
+    <div class="modal-baslik"><span>Yeni Öğrenci Ekle</span><button class="kapat-btn" onclick="modalKapat('ekleOverlay')">✕</button></div>
+    <div class="modal-icerik">
+      <div class="form-grup"><label>Okul No</label><input type="text" id="yeniOkulNo" maxlength="20"></div>
+      <div class="form-grup"><label>Ad Soyad</label><input type="text" id="yeniAd" maxlength="60"></div>
+      <div class="form-grup"><label>Sınıf</label><input type="text" id="yeniSinif" maxlength="20"></div>
+      <div class="form-grup"><label>Devamsızlık (gün)</label><input type="text" id="yeniDevamsizlik" maxlength="6" placeholder="0"></div>
+      <div class="form-grup"><label>Veli Adı</label><input type="text" id="yeniVeli" maxlength="60"></div>
+      <div class="form-grup"><label>Veli Telefonu</label><input type="text" id="yeniTelefon" maxlength="20"></div>
+      <button class="btn btn-mavi" onclick="ogrenciEkle()">Ekle</button>
+      <button class="btn btn-beyaz" onclick="modalKapat('ekleOverlay')">İptal</button>
+    </div>
+  </div>
+</div>
 
 <!-- DÜZENLE MODAL -->
 <div class="overlay" id="duzenleOverlay">
@@ -398,7 +410,6 @@ input[maxlength]{} textarea{min-height:65px;resize:vertical}
     <div class="modal-icerik">
       <div class="form-grup"><label>Ad Soyad</label><input type="text" id="kdAd" maxlength="60"></div>
       <div class="form-grup"><label>Rol</label>
-        <input type="text" class="select-arama" id="kdRolAra" placeholder="🔎 Rol ara..." oninput="selectAramaUygula('kdRolAra','kdRol')">
         <select id="kdRol">
           <option value="ogretmen">Öğretmen</option>
           <option value="rehberlik">Rehberlik Uzmanı (PDR)</option>
@@ -441,56 +452,6 @@ function xss(str){
   if(!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
 }
-function toTitleCase(str){
-  return (str||'').toLocaleLowerCase('tr-TR').split(/\s+/).filter(Boolean)
-    .map(k=>k.charAt(0).toLocaleUpperCase('tr-TR')+k.slice(1)).join(' ');
-}
-function formatSinifSube(str){
-  const parcalar=(str||'').trim().replace(/[_]+/g,' ').replace(/\s*-\s*/g,' ').split(/\s+/).filter(Boolean);
-  if(!parcalar.length) return '';
-  if(parcalar.length===1) return parcalar[0].toLocaleUpperCase('tr-TR');
-  const ilk=parcalar[0].toLocaleUpperCase('tr-TR');
-  const sube=parcalar[1].toLocaleUpperCase('tr-TR');
-  const devam=parcalar.slice(2).join(' ').toLocaleUpperCase('tr-TR');
-  return `${ilk}-${sube}${devam?' '+devam:''}`;
-}
-function formatTarihNokta(str){
-  const rakam=(str||'').replace(/\D/g,'').slice(0,8);
-  const g=rakam.slice(0,2), a=rakam.slice(2,4), y=rakam.slice(4,8);
-  return [g,a,y].filter(Boolean).join('.');
-}
-function kullaniciGorunenAd(k){
-  if(!k) return '—';
-  if(k.email===ADMIN_EMAIL||k.rol==='admin') return ADMIN_GORUNEN_AD;
-  return k.ad||k.email||'—';
-}
-function aktifKullaniciAdi(){
-  if(mevcutAd) return mevcutAd;
-  if(mevcutKullanici?.email===ADMIN_EMAIL) return ADMIN_GORUNEN_AD;
-  return mevcutKullanici?.email||'—';
-}
-function selectAramaUygula(aramaId,selectId){
-  const input=document.getElementById(aramaId);
-  const sel=document.getElementById(selectId);
-  if(!input||!sel) return;
-  const q=input.value.toLocaleLowerCase('tr-TR').trim();
-  Array.from(sel.options).forEach((o,i)=>{
-    if(i===0){o.hidden=false;return;}
-    o.hidden=!!q && !o.text.toLocaleLowerCase('tr-TR').includes(q);
-  });
-}
-function tumSelectlereAramaEkle(){
-  document.querySelectorAll('select').forEach((sel,idx)=>{
-    if(sel.previousElementSibling?.classList?.contains('select-arama')) return;
-    const arama=document.createElement('input');
-    arama.type='text';
-    arama.className='select-arama';
-    arama.id=`otoAra-${sel.id||idx}`;
-    arama.placeholder='🔎 Seçenek ara...';
-    arama.addEventListener('input',()=>selectAramaUygula(arama.id,sel.id));
-    sel.parentNode.insertBefore(arama,sel);
-  });
-}
 // Giriş denemesi sınırlayıcı
 let _loginDeneme=0, _loginBlok=0;
 function rateLimitGiris(){
@@ -521,7 +482,6 @@ const KOL={
   kullanicilar:"kullanicilar"
 };
 const ADMIN_EMAIL="fizikcimhr@gmail.com";
-const ADMIN_GORUNEN_AD="Mahir Han";
 
 // ════════════════════════════════════════════
 // KRİTERLER — 5 BÖLÜM
@@ -547,7 +507,8 @@ const KRITERLER={
     {id:"b2k9",metin:"Aidiyet duygusu zayıf; kendini 'yabancı' ya da 'öteki' olarak hissediyor gibi görünüyor mu?",agirlik:5},
   ]},
   bolum3:{baslik:"Aile ve Çevresel Faktörler",tipi:"risk",kriterler:[
-@@ -512,52 +577,53 @@ const KRITERLER={
+    {id:"b3k1",metin:"Aile içinde şiddet veya ağır ihmal geçmişi biliniyor mu?",agirlik:8},
+    {id:"b3k2",metin:"Ev ortamında denetimsiz silah erişimi ihtimali var mı?",agirlik:10},
     {id:"b3k3",metin:"Yakın zamanda yaşanan ağır kayıp, ayrılık veya travma mevcut mu?",agirlik:7},
     {id:"b3k4",metin:"Aile içinde madde kullanımı olabileceği düşünülüyor mu?",agirlik:6},
   ]},
@@ -575,9 +536,6 @@ let mevcutKullanici=null,mevcutRol=null,mevcutAd=null,adminMi=false;
 let dagilimChart=null,riskChart=null;
 let secilenSinifFiltre='';    // '' = tümünü göster
 let secilenKullaniciFiltre=''; // '' = tümünü göster
-let secilenSinifFiltre='';
-let secilenKullaniciFiltre=''; // '' = kullanıcı seçilmedi
-let secilenYonetimKullanici='';
 let detayAcikId=null,duzenleId=null,kdUid=null;
 
 // ════════════════════════════════════════════
@@ -603,7 +561,138 @@ function riskPuanHesapla(kriterSonuclari){
   });
   const ham=(riskToplam/MAKS_RISK_PUAN)*100-(koruyucuToplam/MAKS_KORUYUCU)*28;
   return Math.round(Math.max(0,Math.min(100,ham)));
-@@ -696,137 +762,139 @@ function formuSifirla(){
+}
+function riskSeviyesi(p){if(p>=70)return"KRİTİK";if(p>=45)return"YÜKSEK";if(p>=20)return"ORTA";return"DÜŞÜK";}
+function rozetSinifi(s){return{KRİTİK:'r-kritik',YÜKSEK:'r-yuksek',ORTA:'r-orta',DÜŞÜK:'r-dusuk'}[s]||'r-dusuk';}
+function avatarRenk(s){return{KRİTİK:'#ffebee',YÜKSEK:'#fff3e0',ORTA:'#fff3e0',DÜŞÜK:'#e8f5e9'}[s]||'#e3f2fd';}
+function avatarYazi(s){return{KRİTİK:'#B71C1C',YÜKSEK:'#bf360c',ORTA:'#E65100',DÜŞÜK:'#2E7D32'}[s]||'#1565C0';}
+function a4Seviye(s){return{KRİTİK:'a4-seviye-kritik',YÜKSEK:'a4-seviye-yuksek',ORTA:'a4-seviye-orta',DÜŞÜK:'a4-seviye-dusuk'}[s]||'a4-seviye-dusuk';}
+
+function ogrenciSonPuani(id){
+  const devs=degerlendirmeler.filter(d=>d.ogrenciId===id);
+  if(!devs.length)return{puan:0,seviye:'DÜŞÜK',sayisi:0};
+  const son=devs[devs.length-1];
+  return{puan:son.puan||0,seviye:son.riskSeviyesi||'DÜŞÜK',sayisi:devs.length};
+}
+function trendHesapla(id){
+  const devs=degerlendirmeler.filter(d=>d.ogrenciId===id);
+  if(devs.length<3)return'sabit';
+  const pp=devs.slice(-4).map(d=>d.puan||0);
+  const n=pp.length;
+  const ilk=pp.slice(0,Math.floor(n/2)).reduce((a,b)=>a+b,0)/Math.ceil(n/2);
+  const son=pp.slice(Math.floor(n/2)).reduce((a,b)=>a+b,0)/Math.ceil(n/2);
+  if(son-ilk>10)return'yuksek';if(ilk-son>10)return'dusuk';return'sabit';
+}
+function trendIkon(t){
+  if(t==='yuksek')return'<span class="trend-yuksek">▲ Yükseliyor</span>';
+  if(t==='dusuk')return'<span class="trend-dusuk">▼ Düşüyor</span>';
+  return'<span class="trend-sabit">— Sabit</span>';
+}
+
+// Okul No önekli ad
+function ogrenciTamAdi(o){
+  if(!o)return'—';
+  return o.okulNo?xss(o.okulNo)+' — '+xss(o.ad):xss(o.ad);
+}
+
+// ════════════════════════════════════════════
+// FORM RENDER
+// ════════════════════════════════════════════
+function formuRenderEt(){
+  Object.entries(KRITERLER).forEach(([bid,bolum])=>{
+    const el=document.getElementById(bid);
+    if(!el)return;
+    el.innerHTML=bolum.kriterler.map(k=>{
+      const olumlu=bolum.tipi==='koruyucu';
+      return`<div class="kriter-satiri">
+        <div style="flex:1">
+          <div class="kriter-metin">${xss(k.metin)}</div>
+          <div style="font-size:11px;color:var(--yazi2);margin-top:1px">${olumlu?'✓ Koruyucu:':'Ağırlık:'} ${k.agirlik} puan</div>
+          <input type="text" class="not-input" id="not-${k.id}" placeholder="Gözlem notu (isteğe bağlı)" maxlength="200" style="display:none">
+        </div>
+        <div class="kriter-kontroller">
+          <button class="yok-btn" id="yok-${k.id}" onclick="kriterSec('${k.id}','yok')">Yok</button>
+          <button class="var-btn${olumlu?' olumlu':''}" id="var-${k.id}" onclick="kriterSec('${k.id}','var')">Var</button>
+        </div>
+      </div>`;
+    }).join('');
+  });
+}
+
+function kriterSec(id,deger){
+  document.getElementById('var-'+id)?.classList.toggle('aktif',deger==='var');
+  document.getElementById('yok-'+id)?.classList.toggle('aktif',deger==='yok');
+  const ni=document.getElementById('not-'+id);
+  if(ni)ni.style.display=deger==='var'?'block':'none';
+  onizlemeGuncelle();
+}
+function kriterDegeri(id){
+  if(document.getElementById('var-'+id)?.classList.contains('aktif'))return'var';
+  if(document.getElementById('yok-'+id)?.classList.contains('aktif'))return'yok';
+  return'';
+}
+
+function onizlemeGuncelle(){
+  let riskT=0,korT=0;
+  const katkilar=[];
+  Object.values(KRITERLER).forEach(bolum=>{
+    bolum.kriterler.forEach(k=>{
+      if(kriterDegeri(k.id)==='var'){
+        if(bolum.tipi==='koruyucu'){
+          korT+=k.agirlik;
+          katkilar.push(`<span style="background:var(--yesil-ac);color:var(--yesil);border-radius:4px;padding:2px 7px;font-size:11px">✓ ${xss(k.metin.substring(0,28))}… -${k.agirlik}</span>`);
+        }else{
+          riskT+=k.agirlik;
+          katkilar.push(`<span style="background:var(--kirmizi-ac);color:var(--kirmizi);border-radius:4px;padding:2px 7px;font-size:11px">${xss(k.metin.substring(0,28))}… +${k.agirlik}</span>`);
+        }
+      }
+    });
+  });
+  const ham=(riskT/MAKS_RISK_PUAN)*100-(korT/MAKS_KORUYUCU)*28;
+  const puan=Math.round(Math.max(0,Math.min(100,ham)));
+  const sv=riskSeviyesi(puan);
+  document.getElementById('onizlemePuan').textContent=puan;
+  const r=document.getElementById('onizlemeRozet');
+  r.textContent=sv;r.className='rozet '+rozetSinifi(sv);
+  document.getElementById('puanDetay').innerHTML=katkilar.join(' ');
+}
+
+// Madde 14: Öğrenci seçilince önceki değerlendirmeyi yükle
+function formOgrenciDegisti(){
+  const ogrenciId=document.getElementById('formOgrenci').value;
+  onizlemeGuncelle();
+  if(!ogrenciId){formuSifirla();return;}
+  const devs=degerlendirmeler.filter(d=>d.ogrenciId===ogrenciId);
+  if(!devs.length)return;
+  const son=devs[devs.length-1];
+  if(!son.kriterSonuclari)return;
+  // Formu sıfırla sonra doldur
+  Object.values(KRITERLER).flatMap(b=>b.kriterler).forEach(k=>{
+    document.getElementById('var-'+k.id)?.classList.remove('aktif');
+    document.getElementById('yok-'+k.id)?.classList.remove('aktif');
+    const ni=document.getElementById('not-'+k.id);
+    if(ni){ni.value='';ni.style.display='none';}
+  });
+  Object.entries(son.kriterSonuclari).forEach(([kId,val])=>{
+    if(val.deger==='var'||val.deger==='yok'){
+      document.getElementById('var-'+kId)?.classList.toggle('aktif',val.deger==='var');
+      document.getElementById('yok-'+kId)?.classList.toggle('aktif',val.deger==='yok');
+      const ni=document.getElementById('not-'+kId);
+      if(ni&&val.deger==='var'){ni.style.display='block';if(val.not)ni.value=val.not;}
+    }
+  });
+  if(son.sonuc)document.getElementById('formSonuc').value=son.sonuc;
+  onizlemeGuncelle();
+  toast('Önceki değerlendirme yüklendi');
+}
+
+function formuSifirla(){
+  Object.values(KRITERLER).flatMap(b=>b.kriterler).forEach(k=>{
+    document.getElementById('var-'+k.id)?.classList.remove('aktif');
+    document.getElementById('yok-'+k.id)?.classList.remove('aktif');
+    const ni=document.getElementById('not-'+k.id);
+    if(ni){ni.value='';ni.style.display='none';}
+  });
   document.getElementById('formSonuc').value='';
   document.getElementById('formOgrenci').value='';
   onizlemeGuncelle();
@@ -630,7 +719,6 @@ function formuKaydet(){
     ogrenciId,kriterSonuclari,puan,
     riskSeviyesi:riskSeviyesi(puan),sonuc,
     degerlendiren:mevcutAd||mevcutKullanici?.email,
-    degerlendiren:aktifKullaniciAdi(),
     degerlendirenUid:mevcutKullanici?.uid,
     degerlendirenRol:mevcutRol,
     olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
@@ -645,11 +733,6 @@ function anasayfaRenderEt(){
   // Kullanıcı filtresi: seçili uid varsa sadece o kullanıcının öğrencileri
   let filtreliOgr=ogrenciler;
   if(secilenKullaniciFiltre){
-  // Kullanıcı seçilmeden listelenmesin
-  let filtreliOgr=[];
-  if(secilenKullaniciFiltre==='__ALL__'){
-    filtreliOgr=ogrenciler;
-  }else if(secilenKullaniciFiltre){
     const gosterilecekIds=new Set();
     degerlendirmeler.forEach(d=>{if(d.degerlendirenUid===secilenKullaniciFiltre)gosterilecekIds.add(d.ogrenciId);});
     ogrenciler.forEach(o=>{if(o.ekleyenUid===secilenKullaniciFiltre)gosterilecekIds.add(o.id);});
@@ -688,7 +771,6 @@ function anasayfaRenderEt(){
         <div class="puan-col"><div class="puan-sayi" style="color:${avatarYazi(o.seviye)}">${o.puan}</div><span class="rozet ${rozetSinifi(o.seviye)}">${o.seviye}</span></div>
       </div>`).join('')
     :'<div style="text-align:center;padding:16px;color:var(--yazi2);font-size:13px">Risk taşıyan öğrenci bulunmuyor</div>';
-    :`<div style="text-align:center;padding:16px;color:var(--yazi2);font-size:13px">${secilenKullaniciFiltre?'Risk taşıyan öğrenci bulunmuyor':'Önce kullanıcı seçiniz'}</div>`;
 
   const d={kritik:puanli.filter(o=>o.seviye==='KRİTİK').length,yuksek:puanli.filter(o=>o.seviye==='YÜKSEK').length,orta:puanli.filter(o=>o.seviye==='ORTA').length,dusuk:puanli.filter(o=>o.seviye==='DÜŞÜK').length};
   const ctx=document.getElementById('dagilimGrafik');
@@ -707,9 +789,6 @@ function kullaniciCbGuncelle(){
     .sort((a,b)=>(a.ad||'').localeCompare(b.ad||'','tr'));
   sel.innerHTML='<option value="">— Tümünü göster —</option>'+
     aktifKullanicilar.map(k=>`<option value="${k.id}">${xss(k.ad||k.email)}</option>`).join('');
-    .sort((a,b)=>kullaniciGorunenAd(a).localeCompare(kullaniciGorunenAd(b),'tr'));
-  sel.innerHTML='<option value="">— Kullanıcı seçiniz —</option><option value="__ALL__">— Tümünü göster —</option>'+
-    aktifKullanicilar.map(k=>`<option value="${k.id}">${xss(kullaniciGorunenAd(k))}</option>`).join('');
   // Seçili değer varsa koru
   if(secilenKullaniciFiltre) sel.value=secilenKullaniciFiltre;
 }
@@ -726,7 +805,6 @@ function sinifCbGuncelle(){
   const ogrSel=document.getElementById('sinifFiltreSel');
   if(ogrSel){
     ogrSel.innerHTML='<option value="">— Tüm sınıfları göster —</option>'+
-    ogrSel.innerHTML='<option value="">— Sınıf seçiniz —</option><option value="__ALL__">— Tüm sınıfları göster —</option>'+
       siniflar.map(s=>`<option value="${xss(s)}">${xss(s)}</option>`).join('');
     if(secilenSinifFiltre) ogrSel.value=secilenSinifFiltre;
   }
@@ -752,7 +830,20 @@ function sinifSeldegisti(){
   secilenSinifFiltre=document.getElementById('sinifFiltreSel').value;
   ogrencileriRenderEt();
 }
-@@ -847,51 +915,51 @@ function formSinifDegisti(){
+// Form sınıf değişince öğrenci listesini filtrele
+function formSinifDegisti(){
+  const sinif=document.getElementById('formSinif').value;
+  const sel=document.getElementById('formOgrenci');
+  sel.innerHTML='<option value="">— Öğrenci seçin —</option>';
+  if(!sinif){sel.innerHTML='<option value="">— Önce sınıf seçin —</option>';return;}
+  const filtreliOgr=ogrenciler.filter(o=>(o.sinif||'Sınıf Girilmemiş')===sinif)
+    .sort((a,b)=>{const na=parseInt(a.okulNo)||99999;const nb=parseInt(b.okulNo)||99999;return na!==nb?na-nb:(a.ad||'').localeCompare(b.ad||'','tr');});
+  sel.innerHTML='<option value="">— Öğrenci seçin —</option>'+
+    filtreliOgr.map(o=>`<option value="${o.id}">${o.okulNo?'['+xss(o.okulNo)+'] ':''} ${xss(o.ad)}</option>`).join('');
+  // Formu sıfırla
+  formuSifirla();
+}
+// Müdahale geçmiş sınıf değişince öğrenci select'i güncelle
 function mudGecmisSinifDegisti(){
   const sinif=document.getElementById('mudGecmisSinif').value;
   const sel=document.getElementById('mudGecmisOgrenci');
@@ -779,7 +870,6 @@ function ogrencileriRenderEt(){
     if(arama&&!((o.ad||'').toLowerCase().includes(arama)||(o.okulNo||'').includes(arama)))return false;
     if(filtre&&o.seviye!==filtre)return false;
     if(sinifFiltre){
-    if(sinifFiltre&&sinifFiltre!=='__ALL__'){
       const s=o.sinif||'Sınıf Girilmemiş';
       if(s!==sinifFiltre)return false;
     }
@@ -805,7 +895,67 @@ function ogrencileriRenderEt(){
     const kritikS=grup.filter(o=>o.seviye==='KRİTİK').length;
     const sinifRenk=kritikS>0?'var(--kirmizi-ac)':grup.some(o=>o.seviye==='YÜKSEK')?'var(--sari-ac)':'var(--mavi-cok-ac)';
     return`<div class="sinif-grup">
-@@ -959,127 +1027,127 @@ function ogrenciDetay(id){
+      <div class="sinif-baslik" style="background:${sinifRenk}">
+        <span style="font-weight:800">${xss(sinifAdi)}</span>
+        <span style="font-size:12px;opacity:.75">${grup.length} öğrenci${kritikS>0?' · ⚠️ '+kritikS+' kritik':''}</span>
+      </div>
+      <div class="kart" style="margin-bottom:0;padding:4px 12px;border-radius:0 0 var(--radius) var(--radius)">
+        ${grup.map(o=>`
+        <div class="ogrenci-satir">
+          <div class="avatar" style="background:${avatarRenk(o.seviye)};color:${avatarYazi(o.seviye)};cursor:pointer" onclick="ogrenciDetay('${o.id}')">${xss(o.ad.charAt(0))}</div>
+          <div class="ogrenci-bilgi" onclick="ogrenciDetay('${o.id}')">
+            <div class="ogrenci-ad">${ogrenciTamAdi(o)}</div>
+            <div class="ogrenci-alt">${o.sayisi} değerlendirme${o.devamsizlik?` · 📅 ${xss(o.devamsizlik)} gün`:''} · ${trendIkon(o.trend)}</div>
+          </div>
+          <div class="puan-col" onclick="ogrenciDetay('${o.id}')" style="margin-right:6px">
+            <div class="puan-sayi" style="color:${avatarYazi(o.seviye)}">${o.puan}</div>
+            <span class="rozet ${rozetSinifi(o.seviye)}">${o.seviye}</span>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0">
+            <button class="islem-btn duzenle-btn" onclick="ogrenciDuzenleAc('${o.id}')" title="Düzenle">✏️</button>
+            <button class="islem-btn yazdir-btn-kucuk" onclick="tekliYazdirOgrenci('${o.id}')" title="Yazdır">🖨</button>
+            ${tamYetkiMi()?`<button class="islem-btn sil-btn" onclick="ogrenciSilOnayla('${o.id}')" title="Sil">🗑</button>`:''}
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════
+// DETAY MODAL
+// ════════════════════════════════════════════
+function ogrenciDetay(id){
+  const o=ogrenciler.find(s=>s.id===id);if(!o)return;
+  detayAcikId=id;
+  const gorDev=degerlendirmeler.filter(d=>d.ogrenciId===id);
+  const son=gorDev.length?gorDev[gorDev.length-1]:null;
+  const puan=son?.puan||0;const sv=son?.riskSeviyesi||'DÜŞÜK';
+  const trend=trendHesapla(id);
+  document.getElementById('detayBaslik').textContent=(o.okulNo?o.okulNo+' — ':'')+o.ad+(o.sinif?' — '+o.sinif:'');
+  document.getElementById('detayIcerik').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <div class="avatar" style="width:48px;height:48px;font-size:18px;background:${avatarRenk(sv)};color:${avatarYazi(sv)}">${xss(o.ad.charAt(0))}</div>
+      <div>
+        <div style="font-size:16px;font-weight:800">${ogrenciTamAdi(o)}</div>
+        <div style="font-size:12px;color:var(--yazi2)">${xss(o.sinif||'—')} · Veli: ${xss(o.veli||'—')} ${o.telefon?'· 📞'+xss(o.telefon):''}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <div class="metrik-kart" style="flex:1;padding:10px;box-shadow:none;border:1px solid var(--gri2)"><div style="font-size:22px;font-weight:900;color:${avatarYazi(sv)}">${puan}</div><div style="font-size:11px;color:var(--yazi2)">Son puan</div></div>
+      <div class="metrik-kart" style="flex:1;padding:10px;box-shadow:none;border:1px solid var(--gri2)"><span class="rozet ${rozetSinifi(sv)}" style="margin-top:4px;display:inline-block">${sv}</span><div style="font-size:11px;color:var(--yazi2);margin-top:4px">Seviye</div></div>
+      <div class="metrik-kart" style="flex:1;padding:10px;box-shadow:none;border:1px solid var(--gri2)"><div style="font-size:22px;font-weight:900">${gorDev.length}</div><div style="font-size:11px;color:var(--yazi2)">Değerlendirme</div></div>
+    </div>
+    <div style="font-size:13px;margin-bottom:4px">Trend: ${trendIkon(trend)}</div>`;
+  const uyEl=document.getElementById('kritikYukselisUyari');
+  uyEl.innerHTML=(trend==='yuksek'&&(sv==='KRİTİK'||sv==='YÜKSEK'))?'<div class="uyari-banner" style="margin-top:10px">⚠️ Risk puanı hızla yükseliyor! İvedilikle müdahale önerilir.</div>':'';
+  // Grafik
+  const son10=gorDev.slice(-10);
+  const etiket=son10.map((d,i)=>d.olusturuldu?.toDate?d.olusturuldu.toDate().toLocaleDateString('tr-TR',{day:'numeric',month:'short'}):(i+1)+'.');
+  const pp=son10.map(d=>d.puan||0);
+  const ctx2=document.getElementById('riskGrafik');
+  if(riskChart)riskChart.destroy();
+  riskChart=new Chart(ctx2,{type:'line',data:{labels:etiket,datasets:[{label:'Risk Puanı',data:pp,borderColor:'#1e88e5',backgroundColor:'rgba(30,136,229,0.07)',borderWidth:2.5,pointRadius:6,pointBackgroundColor:pp.map(p=>p>=70?'#B71C1C':p>=45?'#bf360c':p>=20?'#E65100':'#2E7D32'),fill:true,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{font:{size:10},maxRotation:30}}}}});
   // Geçmiş
   const gecEl=document.getElementById('detayGozlemler');
   if(!gorDev.length){gecEl.innerHTML='<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Henüz değerlendirme yapılmamış</div>';return;}
@@ -832,19 +982,15 @@ function mudahaleEkleDetay(){modalKapat('detayOverlay');ekranGoster('mudahale');
 function ogrenciEkleAc(){document.getElementById('ekleOverlay').classList.add('aktif');}
 function ogrenciEkle(){
   const ad=document.getElementById('yeniAd').value.trim();
-  const ad=toTitleCase(document.getElementById('yeniAd').value.trim());
   if(!ad){toast('Ad girin');return;}
   db.collection(KOL.ogrenciler).add({
     okulNo:document.getElementById('yeniOkulNo').value.trim(),
     ad,sinif:document.getElementById('yeniSinif').value.trim(),
-    ad,sinif:formatSinifSube(document.getElementById('yeniSinif').value.trim()),
     devamsizlik:document.getElementById('yeniDevamsizlik').value.trim(),
     veli:document.getElementById('yeniVeli').value.trim(),
-    veli:toTitleCase(document.getElementById('yeniVeli').value.trim()),
     telefon:document.getElementById('yeniTelefon').value.trim(),
     ekleyenUid:mevcutKullanici?.uid,
     ekleyen:mevcutAd||mevcutKullanici?.email,
-    ekleyen:aktifKullaniciAdi(),
     olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
   }).then(()=>{
     toast('✓ '+xss(ad)+' eklendi');
@@ -866,15 +1012,12 @@ function ogrenciDuzenleAc(id){
 function ogrenciDuzenleKaydet(){
   if(!duzenleId)return;
   const ad=document.getElementById('duzAd').value.trim();
-  const ad=toTitleCase(document.getElementById('duzAd').value.trim());
   if(!ad){toast('Ad boş olamaz');return;}
   db.collection(KOL.ogrenciler).doc(duzenleId).update({
     okulNo:document.getElementById('duzOkulNo').value.trim(),
     ad,sinif:document.getElementById('duzSinif').value.trim(),
-    ad,sinif:formatSinifSube(document.getElementById('duzSinif').value.trim()),
     devamsizlik:document.getElementById('duzDevamsizlik').value.trim(),
     veli:document.getElementById('duzVeli').value.trim(),
-    veli:toTitleCase(document.getElementById('duzVeli').value.trim()),
     telefon:document.getElementById('duzTelefon').value.trim(),
     guncelleyen:mevcutAd,guncellenmeTarihi:firebase.firestore.FieldValue.serverTimestamp()
   }).then(()=>{toast('✓ Güncellendi');modalKapat('duzenleOverlay');duzenleId=null;})
@@ -912,12 +1055,9 @@ function mudahaleKaydet(){
     islem:document.getElementById('mudahaleIslem').value,
     sorumlu:document.getElementById('mudahaleSorumlu').value.trim()||mevcutAd||'Bilinmiyor',
     takip:document.getElementById('mudahaleTakip').value.trim(),
-    sorumlu:toTitleCase(document.getElementById('mudahaleSorumlu').value.trim())||aktifKullaniciAdi(),
-    takip:formatTarihNokta(document.getElementById('mudahaleTakip').value.trim()),
     not:document.getElementById('mudahaleNot').value.trim(),
     riskPuani:son.puan,riskSeviyesi:son.seviye,
     kullanici:mevcutAd||mevcutKullanici?.email,
-    kullanici:aktifKullaniciAdi(),
     kullaniciUid:mevcutKullanici?.uid,
     olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
   }).then(()=>{
@@ -943,7 +1083,25 @@ function mudahaleGecmisiniRenderEt(){
 
   // Filtrele
   let liste=mudahaleler;
-@@ -1105,111 +1173,121 @@ function mudahaleGecmisiniRenderEt(){
+  if(ogrenciId){
+    liste=liste.filter(m=>m.ogrenciId===ogrenciId);
+  } else if(sinif){
+    const siniftakiIds=new Set(ogrenciler.filter(o=>(o.sinif||'Sınıf Girilmemiş')===sinif).map(o=>o.id));
+    liste=liste.filter(m=>siniftakiIds.has(m.ogrenciId));
+  }
+
+  if(!liste.length){el.innerHTML='<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Müdahale kaydı bulunamadı</div>';return;}
+  el.innerHTML=liste.slice(0,20).map(m=>{
+    const o=ogrenciler.find(s=>s.id===m.ogrenciId);
+    const tarih=m.olusturuldu?.toDate?m.olusturuldu.toDate().toLocaleDateString('tr-TR'):'—';
+    const silBtn=mudahaleYetki()?`<button class="islem-btn sil-btn btn-kucuk" style="float:right;margin-top:-4px" onclick="mudahaleSil('${m.id}')" title="Sil">🗑</button>`:'';
+    return`<div class="gozlem-satir">
+      <div class="gozlem-tarih" style="display:flex;justify-content:space-between">${tarih} · ${xss(m.kullanici||'—')}${silBtn}</div>
+      <div style="font-weight:700;font-size:13px">${o?ogrenciTamAdi(o):'—'} <span class="rozet ${rozetSinifi(m.riskSeviyesi||'DÜŞÜK')}">${m.riskSeviyesi||'—'}</span></div>
+      <div style="font-size:13px;margin-top:2px">${xss(m.islem)}</div>
+      <div style="font-size:12px;color:var(--yazi2)">Sorumlu: ${xss(m.sorumlu)}${m.takip?' · Takip: '+xss(m.takip):''}</div>
+      ${m.not?`<div style="font-size:12px;color:var(--yazi2);font-style:italic;margin-top:2px">"${xss(m.not)}"</div>`:''}
+    </div>`;
   }).join('');
 }
 
@@ -970,12 +1128,9 @@ function yonetimPanelRenderEt(){
   const onayEl=document.getElementById('onayListesi');
   onayEl.innerHTML=bekleyenler.length
     ?bekleyenler.map(k=>`<div class="kullanici-satir">
-      ?bekleyenler.map(k=>`<div class="kullanici-satir">
         <div style="flex:1">
           <div style="font-weight:700;font-size:14px">${xss(k.ad||'—')}</div>
           <div style="font-size:12px;color:var(--yazi2)">${xss(k.email||'—')} · ${xss(k.rol||'—')}</div>
-          <div style="font-weight:700;font-size:14px">${xss(kullaniciGorunenAd(k))}</div>
-          <div style="font-size:12px;color:var(--yazi2)">${xss(k.rol||'—')}</div>
         </div>
         <button class="btn btn-yesil btn-kucuk" style="margin:0" onclick="kullaniciOnayla('${k.id}')">✓ Onayla</button>
         <button class="islem-btn sil-btn" onclick="kullaniciSil('${k.id}')">🗑</button>
@@ -985,34 +1140,19 @@ function yonetimPanelRenderEt(){
   // Tüm kullanıcılar
   const yonetimEl=document.getElementById('kullaniciYonetimListesi');
   const aktifler=kullanicilar.filter(k=>k.onaylandi!==false);
-  const yonSel=document.getElementById('kullaniciYonetimSec');
-  const aktifler=kullanicilar.filter(k=>k.onaylandi!==false)
-    .sort((a,b)=>kullaniciGorunenAd(a).localeCompare(kullaniciGorunenAd(b),'tr'));
-  if(yonSel){
-    yonSel.innerHTML='<option value="">— Tüm kullanıcılar —</option>'+aktifler.map(k=>`<option value="${k.id}">${xss(kullaniciGorunenAd(k))}</option>`).join('');
-    if(secilenYonetimKullanici) yonSel.value=secilenYonetimKullanici;
-  }
   yonetimEl.innerHTML=aktifler.length
     ?aktifler.map(k=>{
-    ?aktifler.filter(k=>!secilenYonetimKullanici||k.id===secilenYonetimKullanici).map(k=>{
       const rolEt={ogretmen:'Öğretmen',rehberlik:'Rehberlik',mudur:'Müdür',admin:'Admin'};
       return`<div class="kullanici-satir">
         <div style="flex:1">
           <div style="font-weight:700;font-size:14px">${xss(k.ad||'—')}</div>
           <div style="font-size:12px;color:var(--yazi2)">${xss(k.email||'—')} · <span class="rozet r-dusuk" style="font-size:10px">${rolEt[k.rol]||xss(k.rol)||'—'}</span></div>
-          <div style="font-weight:700;font-size:14px">${xss(kullaniciGorunenAd(k))}</div>
-          <div style="font-size:12px;color:var(--yazi2)"><span class="rozet r-dusuk" style="font-size:10px">${rolEt[k.rol]||xss(k.rol)||'—'}</span></div>
         </div>
         <button class="islem-btn duzenle-btn" onclick="kullaniciDuzenleAc('${k.id}')" title="Düzenle">✏️</button>
         ${k.email!==ADMIN_EMAIL?`<button class="islem-btn sil-btn" onclick="kullaniciSil('${k.id}')" title="Sil">🗑</button>`:''}
-        ${k.rol!=='admin'?`<button class="islem-btn sil-btn" onclick="kullaniciSil('${k.id}')" title="Sil">🗑</button>`:''}
       </div>`;
     }).join('')
     :'<div style="color:var(--yazi2);font-size:13px;padding:8px 0">Kayıtlı kullanıcı yok</div>';
-}
-function kullaniciYonetimSecDegisti(){
-  secilenYonetimKullanici=document.getElementById('kullaniciYonetimSec')?.value||'';
-  yonetimPanelRenderEt();
 }
 
 function kullaniciOnayla(uid){
@@ -1034,7 +1174,6 @@ function kullaniciDuzenleAc(uid){
 function kullaniciDuzenleKaydet(){
   if(!kdUid)return;
   const ad=document.getElementById('kdAd').value.trim();
-  const ad=toTitleCase(document.getElementById('kdAd').value.trim());
   if(!ad){toast('Ad boş olamaz');return;}
   db.collection(KOL.kullanicilar).doc(kdUid).update({
     ad,rol:document.getElementById('kdRol').value
@@ -1049,7 +1188,6 @@ function kullaniciDuzenleKaydet(){
 function mudurAdiBul(){
   const m=kullanicilar.find(k=>k.rol==='mudur'||k.rol==='admin');
   return m?xss(m.ad||m.email):'';
-  return m?xss(kullaniciGorunenAd(m)):'';
 }
 
 // Madde 1-2: Print CSS inline (CSS variables yok, browser header/footer kaldırılacak)
@@ -1075,7 +1213,128 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#000;background
 .a4-deger-olumlu{color:#1565C0;font-weight:700}
 .a4-puan-kutu{display:flex;align-items:center;gap:12px;border:2px solid #ddd;border-radius:6px;padding:8px 12px;margin:8px 0;background:#f8f8f8}
 .a4-puan-sayi{font-size:28px;font-weight:900}
-@@ -1338,118 +1416,119 @@ window.onload=function(){
+.a4-seviye-rozet{padding:4px 14px;border-radius:12px;font-size:12px;font-weight:800}
+.a4-seviye-kritik{background:#ffebee;color:#B71C1C;border:1px solid #ef9a9a}
+.a4-seviye-yuksek{background:#fff3e0;color:#bf360c;border:1px solid #ffcc80}
+.a4-seviye-orta{background:#fff3e0;color:#E65100;border:1px solid #ffcc80}
+.a4-seviye-dusuk{background:#e8f5e9;color:#2E7D32;border:1px solid #a5d6a7}
+.a4-sonuc{border:1px solid #ddd;border-radius:4px;padding:8px;min-height:40px;background:#fafafa;font-size:11px}
+.a4-imza-row{display:flex;justify-content:space-between;margin-top:14px;padding-top:8px;border-top:1px solid #ddd}
+.a4-imza-kutu{text-align:center;font-size:10px;min-width:150px}
+.a4-imza-cizgi{border-top:1px solid #333;width:150px;margin:22px auto 4px}
+.a4-imza-ad{font-weight:700;font-size:11px;margin-bottom:2px}
+`;
+
+function a4FormHtml(o,devListesi){
+  const son=devListesi.length?devListesi[devListesi.length-1]:null;
+  const puan=son?.puan||0;
+  const sv=son?.riskSeviyesi||'DÜŞÜK';
+  const tarih=son?.olusturuldu?.toDate?son.olusturuldu.toDate().toLocaleDateString('tr-TR'):new Date().toLocaleDateString('tr-TR');
+  const degerlendiren=xss(son?.degerlendiren||mevcutAd||'—');
+  const mudurAd=mudurAdiBul();
+  const sonuc=xss(son?.sonuc||'');
+  const kriterSonuclari=son?.kriterSonuclari||{};
+
+  const bolumHtml=(bolumKey,renk,tipi)=>{
+    const b=KRITERLER[bolumKey];
+    const satirlar=b.kriterler.map(k=>{
+      const d=kriterSonuclari[k.id]?.deger||'';
+      const not=xss(kriterSonuclari[k.id]?.not||'');
+      let dHtml='<span style="color:#aaa">—</span>';
+      if(tipi==='koruyucu'){
+        dHtml=d==='var'?'<span class="a4-deger-olumlu">VAR ✓</span>':d==='yok'?'<span class="a4-deger-yok">YOK</span>':'<span style="color:#aaa">—</span>';
+      }else{
+        dHtml=d==='var'?'<span class="a4-deger-var">VAR</span>':d==='yok'?'<span class="a4-deger-yok">YOK</span>':'<span style="color:#aaa">—</span>';
+      }
+      return`<tr><td>${xss(k.metin)}</td><td style="text-align:center;width:60px">${dHtml}</td><td style="width:130px;font-size:9px;color:#555">${not}</td></tr>`;
+    }).join('');
+    return`<div class="a4-bolum-baslik ${renk}">${xss(b.baslik)}</div>
+    <table class="a4-tablo"><thead><tr><th>Kriter</th><th style="width:60px;text-align:center">Var / Yok</th><th style="width:130px">Gözlem Notu</th></tr></thead><tbody>${satirlar}</tbody></table>`;
+  };
+
+  return`<div class="a4-form">
+    <div class="a4-bilgi-row">
+      <div class="a4-bilgi-item">Adı Soyadı: <span>${o.okulNo?'['+xss(o.okulNo)+'] ':''} ${xss(o.ad)}</span></div>
+      <div class="a4-bilgi-item">Sınıf: <span>${xss(o.sinif||'—')}</span></div>
+      <div class="a4-bilgi-item">Tarih: <span>${tarih}</span></div>
+      <div class="a4-bilgi-item">Değerlendiren: <span>${degerlendiren}</span></div>
+    </div>
+    ${bolumHtml('bolum1','a4-b1','risk')}
+    ${bolumHtml('bolum2','a4-b2','risk')}
+    ${bolumHtml('bolum3','a4-b3','risk')}
+    ${bolumHtml('bolum4','a4-b4','risk')}
+    ${bolumHtml('bolum5','a4-b5','koruyucu')}
+    <div class="a4-puan-kutu">
+      <div><div style="font-size:10px;color:#555;margin-bottom:2px">Risk Puanı</div><div class="a4-puan-sayi" style="color:${avatarYazi(sv)}">${puan}</div><div style="font-size:10px;color:#888">/100</div></div>
+      <div><div style="font-size:10px;color:#555;margin-bottom:4px">Risk Seviyesi</div><span class="a4-seviye-rozet ${a4Seviye(sv)}">${sv}</span></div>
+      <div style="flex:1;padding-left:12px;font-size:10px;color:#555">Toplam değerlendirme: <b>${devListesi.length}</b></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:#333;margin-bottom:4px">Değerlendirme Sonucu / Önerilen Müdahale:</div>
+    <div class="a4-sonuc">${sonuc||'—'}</div>
+    <div class="a4-imza-row">
+      <div class="a4-imza-kutu">
+        <div class="a4-imza-ad">${degerlendiren}</div>
+        <div class="a4-imza-cizgi"></div>
+        Değerlendiren Öğretmen / PDR
+      </div>
+      <div class="a4-imza-kutu">
+        <div class="a4-imza-ad">${mudurAd||'—'}</div>
+        <div class="a4-imza-cizgi"></div>
+        Okul Müdürü
+      </div>
+    </div>
+  </div>`;
+}
+
+function tekliYazdirOgrenci(id){
+  const o=ogrenciler.find(s=>s.id===id);if(!o)return;
+  const devs=degerlendirmeler.filter(d=>d.ogrenciId===id);
+  const html=a4FormHtml(o,devs);
+  document.getElementById('yazdirBaslik').textContent='🖨 Yazdır — '+(o.okulNo?o.okulNo+' ':'')+o.ad;
+  document.getElementById('yazdirOnizleme').innerHTML=html;
+  document.getElementById('yazdirOverlay').classList.add('aktif');
+}
+function tekliYazdirDetay(){if(detayAcikId)tekliYazdirOgrenci(detayAcikId);}
+function topluYazdirAc(){
+  if(!ogrenciler.length){toast('Öğrenci bulunamadı');return;}
+  const html=ogrenciler.map(o=>`<div class="yazdir-sayfa">${a4FormHtml(o,degerlendirmeler.filter(d=>d.ogrenciId===o.id))}</div>`).join('');
+  document.getElementById('yazdirBaslik').textContent='🖨 Toplu Yazdır — '+ogrenciler.length+' öğrenci';
+  document.getElementById('yazdirOnizleme').innerHTML=html;
+  document.getElementById('yazdirOverlay').classList.add('aktif');
+}
+
+// Madde 1: Yeni pencerede yazdır (Generic/Text Only hatasını önler)
+function yazdirBaslat(){
+  const icerik=document.getElementById('yazdirOnizleme').innerHTML;
+  const tamHtml=`<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Risk Değerlendirme Formu</title>
+<style>${A4_CSS}</style>
+</head>
+<body>
+${icerik}
+<script>
+window.onload=function(){
+  setTimeout(function(){
+    window.print();
+    setTimeout(function(){window.close();},800);
+  },400);
+};
+<\/script>
+</body>
+</html>`;
+  try{
+    const blob=new Blob([tamHtml],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const w=window.open(url,'_blank','width=820,height=1100,menubar=no,toolbar=no');
+    if(!w){toast('Açılır pencere engellendi. Lütfen tarayıcı izinlerinizi kontrol edin.');return;}
+    setTimeout(()=>URL.revokeObjectURL(url),15000);
+    modalKapat('yazdirOverlay');
+  }catch(e){
+    // Fallback: doğrudan print
+    const alan=document.createElement('div');
     alan.id='_yazdir_fallback';alan.innerHTML=icerik;
     document.body.appendChild(alan);
     window.print();
@@ -1102,7 +1361,6 @@ function girisYap(){
 }
 function kayitOl(){
   const ad=document.getElementById('kayitAd').value.trim();
-  const ad=toTitleCase(document.getElementById('kayitAd').value.trim());
   const e=document.getElementById('kayitEmail').value.trim();
   const s=document.getElementById('kayitSifre').value;
   const rol=document.getElementById('kayitRol').value;
@@ -1112,7 +1370,6 @@ function kayitOl(){
   auth.createUserWithEmailAndPassword(e,s)
     .then(r=>db.collection(KOL.kullanicilar).doc(r.user.uid).set({
       ad,email:e,rol:gercekRol,onaylandi,
-      ad:gercekRol==='admin'?ADMIN_GORUNEN_AD:ad,email:e,rol:gercekRol,onaylandi,
       olusturuldu:firebase.firestore.FieldValue.serverTimestamp()
     }))
     .then(()=>{
@@ -1155,14 +1412,12 @@ auth.onAuthStateChanged(kullanici=>{
       // arka planda admin yetkisiyle çalış, arayüzde sadece adı görünsün
       if(kullanici.email===ADMIN_EMAIL){
         const ad=doc.exists?(doc.data().ad||kullanici.email):kullanici.email;
-        const ad=doc.exists?(doc.data().ad||ADMIN_GORUNEN_AD):ADMIN_GORUNEN_AD;
         baslatUygulama('admin',ad);return;
       }
       if(!doc.exists){gosterOnayBekliyor('Hesabınız bulunamadı veya silinmiş olabilir.');return;}
       const d=doc.data();
       if(!d.onaylandi){gosterOnayBekliyor('Hesabınız yönetici onayı bekliyor. Onaylandıktan sonra giriş yapabilirsiniz.');return;}
       baslatUygulama(d.rol,d.ad||kullanici.email);
-      baslatUygulama(d.rol,toTitleCase(d.ad||kullanici.email));
     }).catch(()=>gosterOnayBekliyor('Hesap bilgileri alınamadı. Lütfen tekrar deneyin.'));
   }else{
     mevcutKullanici=null;mevcutRol=null;mevcutAd=null;adminMi=false;
@@ -1173,7 +1428,6 @@ auth.onAuthStateChanged(kullanici=>{
 
 function baslatUygulama(rol,ad){
   mevcutRol=rol;mevcutAd=ad;adminMi=(rol==='admin');
-  tumSelectlereAramaEkle();
   const rolEt={ogretmen:'Öğretmen',rehberlik:'Rehberlik Uzmanı',mudur:'Müdür / İdare',admin:'Öğretmen'};
   // Admin perde arkasında çalışır; navbar'da gerçek adı + normal rol etiketi görünür
   document.getElementById('navRol').textContent=(rolEt[rol]||rol)+' — '+xss(ad);
@@ -1199,7 +1453,20 @@ function verileriYukle(){
     });
     sinifCbGuncelle();selectleriGuncelle();ogrencileriRenderEt();anasayfaRenderEt();
     if(mevcutAd)document.getElementById('formDegerlendiren').value=mevcutAd;
-@@ -1470,28 +1549,32 @@ function verileriYukle(){
+  },err=>{console.error(err);toast('Veri yüklenemedi');});
+
+  db.collection(KOL.degerlendirmeler).onSnapshot(snap=>{
+    degerlendirmeler=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.olusturuldu?.seconds||0)-(b.olusturuldu?.seconds||0));
+    anasayfaRenderEt();ogrencileriRenderEt();selectleriGuncelle();
+  },err=>console.error(err));
+
+  db.collection(KOL.mudahaleler).onSnapshot(snap=>{
+    mudahaleler=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.olusturuldu?.seconds||0)-(a.olusturuldu?.seconds||0));
+    mudahaleGecmisiniRenderEt();
+  },err=>console.error(err));
+
+  db.collection(KOL.kullanicilar).onSnapshot(snap=>{
+    kullanicilar=snap.docs.map(d=>({id:d.id,...d.data()}));
     kullaniciCbGuncelle();
     if(tamYetkiMi())yonetimPanelRenderEt();
     anasayfaRenderEt();
@@ -1225,10 +1492,6 @@ function toast(mesaj){
   t.textContent=mesaj;t.classList.add('goster');
   setTimeout(()=>t.classList.remove('goster'),2800);
 }
-
-document.getElementById('mudahaleTakip')?.addEventListener('input',e=>{
-  e.target.value=formatTarihNokta(e.target.value);
-});
 </script>
 </body>
 </html>
